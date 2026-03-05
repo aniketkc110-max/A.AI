@@ -4,432 +4,598 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>A.AI by Aniket</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --c1:#0affed;--c2:#ff2d9b;--c3:#a259ff;--c4:#ffcc00;
-  --bg:#060610;--glass:rgba(255,255,255,0.04);
-  --text:#f0f0ff;--muted:#5a5a80;
+  --bg:#0c0c14;
+  --sidebar:#09090f;
+  --chat:#0f0f1a;
+  --surface:#16161f;
+  --border:#1e1e2d;
+  --accent:#6c63ff;
+  --accent2:#ff6584;
+  --green:#00e5a0;
+  --text:#e8e8f5;
+  --muted:#4a4a6a;
+  --light:#b8b8d0;
 }
 html,body{height:100%;overflow:hidden;background:var(--bg)}
-body{font-family:'Outfit',sans-serif;color:var(--text);position:relative}
+body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);display:flex}
 
-/* ── AURORA BACKGROUND ── */
-#aurora{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
-.blob{position:absolute;border-radius:50%;filter:blur(80px);opacity:0.18;animation:drift 20s ease-in-out infinite}
-.b1{width:600px;height:600px;background:var(--c3);top:-100px;left:-100px;animation-duration:22s}
-.b2{width:500px;height:500px;background:var(--c2);bottom:-80px;right:-80px;animation-duration:18s;animation-delay:-7s}
-.b3{width:400px;height:400px;background:var(--c1);top:40%;left:40%;animation-duration:25s;animation-delay:-13s}
-.b4{width:300px;height:300px;background:var(--c4);bottom:20%;left:10%;animation-duration:20s;animation-delay:-4s;opacity:0.1}
-@keyframes drift{
-  0%,100%{transform:translate(0,0) scale(1)}
-  33%{transform:translate(60px,-40px) scale(1.1)}
-  66%{transform:translate(-40px,60px) scale(0.9)}
-}
-
-/* ── NOISE GRAIN ── */
-#aurora::after{
-  content:'';position:absolute;inset:0;
-  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-  opacity:0.4;pointer-events:none;
-}
-
-/* ── LAYOUT ── */
-#shell{
-  position:relative;z-index:5;
+/* ══ SIDEBAR ══ */
+#sidebar{
+  width:260px;flex-shrink:0;
+  background:var(--sidebar);
+  border-right:1px solid var(--border);
   display:flex;flex-direction:column;
   height:100vh;
-  max-width:820px;margin:0 auto;
-  padding:0 20px;
+  position:relative;
+  z-index:10;
 }
 
-/* ── TOP BAR ── */
+.sidebar-top{
+  padding:20px 16px 16px;
+  border-bottom:1px solid var(--border);
+}
+
+.brand{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+
+.brand-icon{
+  width:40px;height:40px;border-radius:12px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;font-weight:800;color:#fff;
+  box-shadow:0 4px 20px rgba(108,99,255,0.4);
+  font-family:'Clash Display',sans-serif;
+  letter-spacing:-0.5px;
+}
+
+.brand-info{display:flex;flex-direction:column;gap:1px}
+.brand-name{font-family:'Clash Display',sans-serif;font-size:18px;font-weight:700;letter-spacing:.5px;color:var(--text)}
+.brand-tag{font-size:10px;color:var(--muted);letter-spacing:1px}
+
+.new-chat-btn{
+  width:100%;padding:11px 16px;border-radius:10px;border:none;
+  background:linear-gradient(135deg,var(--accent),#8b83ff);
+  color:#fff;font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:13px;font-weight:600;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:all .2s;letter-spacing:.3px;
+}
+.new-chat-btn:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(108,99,255,0.4)}
+
+.sidebar-section{
+  padding:14px 16px 8px;
+  font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;
+}
+
+.history{flex:1;overflow-y:auto;padding:0 8px 16px}
+.history::-webkit-scrollbar{width:0}
+
+.hist-item{
+  padding:10px 10px;border-radius:8px;cursor:pointer;
+  font-size:12.5px;color:var(--light);
+  transition:all .15s;display:flex;align-items:center;gap:8px;
+  margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.hist-item:hover{background:var(--surface);color:var(--text)}
+.hist-item.active{background:rgba(108,99,255,0.12);color:var(--accent)}
+
+.sidebar-bottom{
+  padding:14px 16px;
+  border-top:1px solid var(--border);
+}
+.founder-card{
+  background:rgba(108,99,255,0.08);
+  border:1px solid rgba(108,99,255,0.2);
+  border-radius:12px;
+  padding:12px 14px;
+}
+.fc-label{font-size:9px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px}
+.fc-name{font-family:'Clash Display',sans-serif;font-size:17px;font-weight:700;
+  background:linear-gradient(90deg,var(--accent),var(--accent2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  letter-spacing:1px;
+}
+.fc-role{font-size:10px;color:var(--muted);margin-top:2px}
+
+/* ══ MAIN CHAT AREA ══ */
+#main{
+  flex:1;display:flex;flex-direction:column;
+  height:100vh;background:var(--chat);
+  position:relative;overflow:hidden;
+  min-width:0;
+}
+
+/* subtle gradient top */
+#main::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:200px;
+  background:radial-gradient(ellipse at 50% 0%,rgba(108,99,255,0.06),transparent);
+  pointer-events:none;z-index:0;
+}
+
+/* ── TOPBAR ── */
 #topbar{
   display:flex;align-items:center;justify-content:space-between;
-  padding:18px 0 14px;
-  border-bottom:1px solid rgba(255,255,255,0.06);
+  padding:16px 28px;
+  border-bottom:1px solid var(--border);
   flex-shrink:0;
+  position:relative;z-index:5;
+  background:rgba(15,15,26,0.8);
+  backdrop-filter:blur(20px);
 }
 
-.logo-wrap{display:flex;align-items:center;gap:14px}
+.model-badge{
+  display:flex;align-items:center;gap:8px;
+  padding:7px 14px;border-radius:20px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  font-size:12px;color:var(--light);font-weight:500;
+}
+.model-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:mdot 2s ease-in-out infinite}
+@keyframes mdot{0%,100%{opacity:1}50%{opacity:0.4}}
 
-.ai-orb{
-  width:44px;height:44px;border-radius:50%;
-  background:conic-gradient(from 0deg,var(--c1),var(--c2),var(--c3),var(--c4),var(--c1));
-  animation:spinOrb 4s linear infinite;
-  position:relative;flex-shrink:0;
+.topbar-right{display:flex;align-items:center;gap:10px}
+.top-stat{
+  font-size:11px;color:var(--muted);
+  padding:5px 12px;border-radius:8px;
+  background:var(--surface);border:1px solid var(--border);
+  letter-spacing:.5px;
 }
-.ai-orb::after{
-  content:'';position:absolute;inset:3px;border-radius:50%;
-  background:var(--bg);
-}
-.ai-orb-inner{
-  position:absolute;inset:8px;border-radius:50%;z-index:1;
-  background:radial-gradient(circle,var(--c1),var(--c3));
-  animation:innerPulse 2.5s ease-in-out infinite;
-}
-@keyframes spinOrb{to{transform:rotate(360deg)}}
-@keyframes innerPulse{0%,100%{opacity:0.8;transform:scale(0.9)}50%{opacity:1;transform:scale(1.1)}}
+.top-stat span{color:var(--accent)}
 
-.logo-text{display:flex;flex-direction:column;line-height:1.1}
-.logo-main{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:4px;
-  background:linear-gradient(90deg,var(--c1),var(--c2));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-}
-.logo-sub{font-size:9px;letter-spacing:3px;color:var(--muted);text-transform:uppercase}
-
-.topbar-center{
-  display:flex;flex-direction:column;align-items:center;gap:4px;
-}
-.alive-pill{
-  display:flex;align-items:center;gap:7px;
-  padding:5px 14px;border-radius:20px;
-  background:rgba(10,255,237,0.06);
-  border:1px solid rgba(10,255,237,0.15);
-  font-size:10px;letter-spacing:2px;color:var(--c1);text-transform:uppercase;
-}
-.alive-dot{
-  width:6px;height:6px;background:var(--c1);border-radius:50%;
-  animation:aliveBlink 1.4s ease-in-out infinite;
-  box-shadow:0 0 8px var(--c1);
-}
-@keyframes aliveBlink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.3;transform:scale(0.7)}}
-.topbar-time{font-size:11px;color:var(--muted);letter-spacing:1px;font-variant-numeric:tabular-nums}
-
-.founder-pill{
-  display:flex;flex-direction:column;align-items:flex-end;gap:2px;
-}
-.founder-by{font-size:9px;color:var(--muted);letter-spacing:2px;text-transform:uppercase}
-.founder-nm{
-  font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:3px;
-  background:linear-gradient(90deg,var(--c4),var(--c2));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+/* ── WELCOME SCREEN ── */
+#welcome{
+  flex:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:40px 24px;
+  position:relative;z-index:2;
 }
 
-/* ── MESSAGES AREA ── */
+.welcome-icon{
+  width:72px;height:72px;border-radius:20px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Clash Display',sans-serif;font-size:28px;font-weight:700;color:#fff;
+  box-shadow:0 8px 40px rgba(108,99,255,0.4);
+  margin-bottom:20px;
+  animation:iconFloat 4s ease-in-out infinite;
+}
+@keyframes iconFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+
+.welcome-title{
+  font-family:'Clash Display',sans-serif;font-size:34px;font-weight:700;
+  text-align:center;margin-bottom:8px;letter-spacing:.5px;
+}
+.welcome-sub{font-size:14px;color:var(--light);text-align:center;margin-bottom:32px;line-height:1.6;max-width:420px}
+
+.suggestions{
+  display:grid;grid-template-columns:1fr 1fr;gap:10px;
+  max-width:520px;width:100%;
+}
+.sug{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:14px;padding:14px 16px;cursor:pointer;
+  transition:all .2s;
+}
+.sug:hover{border-color:var(--accent);background:rgba(108,99,255,0.06);transform:translateY(-2px);box-shadow:0 8px 24px rgba(108,99,255,0.12)}
+.sug-icon{font-size:18px;margin-bottom:6px}
+.sug-text{font-size:12.5px;color:var(--light);line-height:1.5}
+
+/* ── MESSAGES ── */
 #feed{
   flex:1;overflow-y:auto;
-  padding:24px 0 12px;
-  display:flex;flex-direction:column;gap:20px;
+  padding:24px 0;
+  display:none;flex-direction:column;
+  position:relative;z-index:2;
   scroll-behavior:smooth;
-  min-height:0;
 }
-#feed::-webkit-scrollbar{width:0}
+#feed.active{display:flex}
+#feed::-webkit-scrollbar{width:4px}
+#feed::-webkit-scrollbar-track{background:transparent}
+#feed::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
 
-/* ── MESSAGE ROW ── */
-.row{display:flex;gap:14px;animation:rowIn .4s cubic-bezier(.16,1,.3,1) forwards;opacity:0}
-@keyframes rowIn{from{opacity:0;transform:translateY(20px) scale(.97)}to{opacity:1;transform:none}}
-.row.me{flex-direction:row-reverse}
-
-/* ── AVATARS ── */
-.av{width:38px;height:38px;border-radius:14px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;position:relative}
-.av.ai{
-  background:linear-gradient(135deg,var(--c3),var(--c1));
-  color:#000;font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:1px;
-  box-shadow:0 0 20px rgba(162,89,255,0.4);
+.msg-group{
+  padding:16px 28px;
+  display:flex;gap:16px;
+  animation:fadeIn .3s ease forwards;
+  max-width:900px;width:100%;margin:0 auto;
+  box-sizing:border-box;
 }
-.av.me{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:var(--c1)}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 
-/* ── BUBBLES ── */
-.bub-wrap{display:flex;flex-direction:column;gap:5px;max-width:75%}
-.bub-meta{font-size:10px;color:var(--muted);letter-spacing:.5px;padding:0 4px}
-.row.me .bub-meta{text-align:right}
+.msg-group.user{justify-content:flex-end}
+.msg-group.user .msg-av{order:2}
+.msg-group.user .msg-content{order:1;align-items:flex-end}
 
-.bub{
-  padding:14px 18px;border-radius:20px;
+.msg-av{
+  width:36px;height:36px;border-radius:11px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;
+  align-self:flex-start;margin-top:2px;
+}
+.av-ai{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;box-shadow:0 2px 12px rgba(108,99,255,0.3)}
+.av-user{background:var(--surface);border:1px solid var(--border);color:var(--accent)}
+
+.msg-content{display:flex;flex-direction:column;gap:4px;max-width:75%;min-width:0}
+.msg-name{font-size:11px;color:var(--muted);letter-spacing:.5px;padding:0 4px}
+
+.bubble{
+  padding:13px 17px;border-radius:16px;
   font-size:14px;line-height:1.75;
-  backdrop-filter:blur(16px);
-  position:relative;overflow:hidden;
+  word-break:break-word;
 }
-
-.bub.ai{
-  background:rgba(162,89,255,0.08);
-  border:1px solid rgba(162,89,255,0.2);
+.bubble.ai{
+  background:var(--surface);
+  border:1px solid var(--border);
   border-top-left-radius:4px;
   color:var(--text);
 }
-.bub.ai::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:1px;
-  background:linear-gradient(90deg,var(--c3),var(--c1),transparent);
-  opacity:0.5;
-}
-
-.bub.me{
-  background:rgba(10,255,237,0.06);
-  border:1px solid rgba(10,255,237,0.15);
+.bubble.user{
+  background:linear-gradient(135deg,var(--accent),#8b83ff);
+  color:#fff;
   border-top-right-radius:4px;
-  color:var(--text);
-}
-.bub.me::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:1px;
-  background:linear-gradient(90deg,transparent,var(--c1),var(--c2));
-  opacity:0.5;
 }
 
-/* ── TYPING ── */
-.typing-row{display:flex;gap:14px;animation:rowIn .3s forwards;opacity:0}
-.t-dots{display:flex;align-items:center;gap:5px;padding:18px 20px}
-.t-dots span{width:7px;height:7px;border-radius:50%;background:var(--c3);animation:tdot 1.2s ease-in-out infinite}
-.t-dots span:nth-child(2){animation-delay:.2s;background:var(--c1)}
-.t-dots span:nth-child(3){animation-delay:.4s;background:var(--c2)}
-@keyframes tdot{0%,60%,100%{transform:scale(1);opacity:.4}30%{transform:scale(1.5);opacity:1}}
+/* markdown-ish */
+.bubble strong{font-weight:600;color:inherit}
+.bubble.ai strong{color:#c8c4ff}
+.bubble code{
+  background:rgba(108,99,255,0.15);padding:2px 6px;border-radius:4px;
+  font-family:monospace;font-size:12.5px;color:#c8c4ff;
+}
+.bubble pre{
+  background:rgba(0,0,0,0.3);border:1px solid var(--border);
+  border-radius:10px;padding:14px;margin:8px 0;overflow-x:auto;
+}
+.bubble pre code{background:none;padding:0;font-size:12px;color:#b8f0e0}
+.bubble ul,.bubble ol{padding-left:20px;margin:6px 0}
+.bubble li{margin:3px 0}
 
-/* ── INPUT ZONE ── */
-#inputzone{
-  flex-shrink:0;
-  padding:12px 0 20px;
-  border-top:1px solid rgba(255,255,255,0.05);
-  position:relative;
-}
-#inputzone::before{
-  content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);
-  width:160px;height:1px;
-  background:linear-gradient(90deg,transparent,var(--c1),var(--c2),transparent);
-}
+/* typing cursor */
+.cursor-blink{display:inline-block;width:2px;height:16px;background:var(--accent);margin-left:2px;vertical-align:middle;animation:blink .7s step-end infinite}
+@keyframes blink{50%{opacity:0}}
 
-.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
-.chip{
-  padding:6px 14px;border-radius:20px;
-  border:1px solid rgba(255,255,255,0.08);
-  background:rgba(255,255,255,0.02);
-  color:var(--muted);font-size:11px;cursor:pointer;
-  transition:all .2s;font-family:'Outfit',sans-serif;
-  white-space:nowrap;
-}
-.chip:hover{
-  border-color:var(--c1);color:var(--c1);
-  background:rgba(10,255,237,0.05);
-  box-shadow:0 0 14px rgba(10,255,237,0.1);
-  transform:translateY(-1px);
+/* ── INPUT AREA ── */
+#input-area{
+  flex-shrink:0;padding:16px 28px 20px;
+  position:relative;z-index:5;
+  background:linear-gradient(to top,var(--chat) 80%,transparent);
 }
 
-.input-row{display:flex;gap:10px;align-items:center}
-
-.input-outer{
-  flex:1;position:relative;
-  background:rgba(255,255,255,0.03);
-  border:1px solid rgba(255,255,255,0.08);
+.input-box{
+  max-width:860px;margin:0 auto;
+  background:var(--surface);
+  border:1px solid var(--border);
   border-radius:16px;
+  display:flex;align-items:flex-end;gap:10px;
+  padding:12px 12px 12px 18px;
   transition:border-color .2s,box-shadow .2s;
-  overflow:hidden;
 }
-.input-outer:focus-within{
-  border-color:rgba(162,89,255,0.5);
-  box-shadow:0 0 0 3px rgba(162,89,255,0.08),0 0 30px rgba(162,89,255,0.05);
-}
-.input-outer::before{
-  content:'';position:absolute;inset:0;
-  background:linear-gradient(135deg,rgba(10,255,237,0.03),rgba(255,45,155,0.03));
-  pointer-events:none;
+.input-box:focus-within{
+  border-color:rgba(108,99,255,0.5);
+  box-shadow:0 0 0 3px rgba(108,99,255,0.08);
 }
 
 #inp{
-  width:100%;background:transparent;border:none;outline:none;
-  padding:14px 20px;color:var(--text);
-  font-family:'Outfit',sans-serif;font-size:14px;
+  flex:1;background:transparent;border:none;outline:none;
+  color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:14px;resize:none;
+  min-height:24px;max-height:160px;line-height:1.6;
+  overflow-y:auto;
+  padding:2px 0;
 }
 #inp::placeholder{color:var(--muted)}
+#inp::-webkit-scrollbar{width:0}
 
-.send{
-  width:50px;height:50px;border-radius:16px;border:none;
-  background:linear-gradient(135deg,var(--c3),var(--c1));
-  color:#fff;cursor:pointer;flex-shrink:0;
+.send-btn{
+  width:40px;height:40px;border-radius:10px;border:none;flex-shrink:0;
+  background:linear-gradient(135deg,var(--accent),#8b83ff);
+  color:#fff;cursor:pointer;
   display:flex;align-items:center;justify-content:center;
-  transition:transform .15s,box-shadow .2s;
-  position:relative;overflow:hidden;
+  transition:all .2s;
 }
-.send::after{
-  content:'';position:absolute;inset:0;
-  background:linear-gradient(135deg,rgba(255,255,255,0.2),transparent);
-}
-.send:hover{transform:scale(1.07);box-shadow:0 0 28px rgba(162,89,255,0.5)}
-.send svg{width:18px;height:18px;fill:#fff;position:relative;z-index:1}
+.send-btn:hover{transform:scale(1.05);box-shadow:0 4px 16px rgba(108,99,255,0.4)}
+.send-btn:disabled{opacity:0.4;cursor:not-allowed;transform:none;box-shadow:none}
+.send-btn svg{width:16px;height:16px;fill:#fff}
 
-/* ── BOTTOM BAR ── */
-#bottombar{
-  display:flex;justify-content:space-between;align-items:center;
-  padding:8px 0 14px;
-  font-size:10px;color:var(--muted);letter-spacing:1px;
-  flex-shrink:0;
+.stop-btn{
+  width:40px;height:40px;border-radius:10px;border:none;flex-shrink:0;
+  background:var(--surface);border:1px solid var(--border);
+  color:var(--accent2);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .2s;font-size:14px;
 }
-.stat-chips{display:flex;gap:16px}
-.sc{display:flex;align-items:center;gap:5px}
-.sc-dot{width:5px;height:5px;border-radius:50%}
+.stop-btn:hover{border-color:var(--accent2);background:rgba(255,101,132,0.08)}
+
+.input-footer{
+  max-width:860px;margin:8px auto 0;
+  font-size:11px;color:var(--muted);text-align:center;letter-spacing:.3px;
+}
 </style>
 </head>
 <body>
 
-<div id="aurora">
-  <div class="blob b1"></div>
-  <div class="blob b2"></div>
-  <div class="blob b3"></div>
-  <div class="blob b4"></div>
+<!-- SIDEBAR -->
+<div id="sidebar">
+  <div class="sidebar-top">
+    <div class="brand">
+      <div class="brand-icon">A</div>
+      <div class="brand-info">
+        <div class="brand-name">A.AI</div>
+        <div class="brand-tag">by Aniket</div>
+      </div>
+    </div>
+    <button class="new-chat-btn" onclick="newChat()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      New Chat
+    </button>
+  </div>
+
+  <div class="sidebar-section">Recent</div>
+  <div class="history" id="history"></div>
+
+  <div class="sidebar-bottom">
+    <div class="founder-card">
+      <div class="fc-label">Founder & Creator</div>
+      <div class="fc-name">ANIKET</div>
+      <div class="fc-role">Chief AI Architect · A.AI</div>
+    </div>
+  </div>
 </div>
 
-<div id="shell">
+<!-- MAIN -->
+<div id="main">
 
   <!-- TOPBAR -->
   <div id="topbar">
-    <div class="logo-wrap">
-      <div class="ai-orb"><div class="ai-orb-inner"></div></div>
-      <div class="logo-text">
-        <div class="logo-main">A.AI</div>
-        <div class="logo-sub">Intelligence Evolved</div>
+    <div class="model-badge">
+      <div class="model-dot"></div>
+      A.AI · Latest Model
+    </div>
+    <div class="topbar-right">
+      <div class="top-stat">Messages: <span id="tc">0</span></div>
+      <div class="top-stat" id="latstat" style="display:none">Last: <span id="lat">—</span></div>
+    </div>
+  </div>
+
+  <!-- WELCOME -->
+  <div id="welcome">
+    <div class="welcome-icon">A</div>
+    <div class="welcome-title">Hello, I'm <span style="background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent">A.AI</span></div>
+    <div class="welcome-sub">Created by <strong>Aniket</strong> — the world's most innovative AI assistant. Ask me anything. I think, reason, and respond like no other AI.</div>
+    <div class="suggestions">
+      <div class="sug" onclick="ask('Explain quantum computing in simple terms')">
+        <div class="sug-icon">⚛️</div>
+        <div class="sug-text">Explain quantum computing in simple terms</div>
       </div>
-    </div>
-
-    <div class="topbar-center">
-      <div class="alive-pill"><div class="alive-dot"></div>Live · Thinking</div>
-      <div class="topbar-time" id="clock">—</div>
-    </div>
-
-    <div class="founder-pill">
-      <div class="founder-by">Created by</div>
-      <div class="founder-nm">ANIKET</div>
+      <div class="sug" onclick="ask('Write a Python function to sort a list')">
+        <div class="sug-icon">💻</div>
+        <div class="sug-text">Write a Python function to sort a list</div>
+      </div>
+      <div class="sug" onclick="ask('What makes A.AI different from other AIs?')">
+        <div class="sug-icon">🚀</div>
+        <div class="sug-text">What makes A.AI different from other AIs?</div>
+      </div>
+      <div class="sug" onclick="ask('Write a short story about the future of AI')">
+        <div class="sug-icon">✍️</div>
+        <div class="sug-text">Write a short story about the future of AI</div>
+      </div>
     </div>
   </div>
 
   <!-- FEED -->
-  <div id="feed">
-    <div class="row">
-      <div class="av ai">A</div>
-      <div class="bub-wrap">
-        <div class="bub-meta">A.AI · just now</div>
-        <div class="bub ai">
-          Hey 👋 I'm <strong style="color:var(--c1)">A.AI</strong> — built by <strong style="color:var(--c4)">Aniket</strong>. I'm not like any AI you've seen before. I think, I reason, I create. What's on your mind?
-        </div>
-      </div>
-    </div>
-  </div>
+  <div id="feed"></div>
 
   <!-- INPUT -->
-  <div id="inputzone">
-    <div class="chips">
-      <div class="chip" onclick="q('What makes A.AI unique?')">✦ What makes A.AI unique?</div>
-      <div class="chip" onclick="q('Who is Aniket?')">⚡ Who is Aniket?</div>
-      <div class="chip" onclick="q('Show me what you can do')">🚀 Show your power</div>
-      <div class="chip" onclick="q('Write me a poem about the future')">🎨 Write a poem</div>
-    </div>
-    <div class="input-row">
-      <div class="input-outer">
-        <input id="inp" type="text" placeholder="Talk to A.AI — ask anything…" autocomplete="off"/>
-      </div>
-      <button class="send" onclick="send()">
+  <div id="input-area">
+    <div class="input-box" id="inputbox">
+      <textarea id="inp" placeholder="Message A.AI…" rows="1"></textarea>
+      <button class="send-btn" id="sendbtn" onclick="sendMsg()">
         <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
       </button>
     </div>
-  </div>
-
-  <!-- BOTTOM BAR -->
-  <div id="bottombar">
-    <div class="stat-chips">
-      <div class="sc"><div class="sc-dot" style="background:var(--c1);box-shadow:0 0 6px var(--c1)"></div><span id="sc1">0 messages</span></div>
-      <div class="sc"><div class="sc-dot" style="background:var(--c2);box-shadow:0 0 6px var(--c2)"></div><span id="sc2">0ms latency</span></div>
-      <div class="sc"><div class="sc-dot" style="background:var(--c3);box-shadow:0 0 6px var(--c3)"></div><span>powered by A.AI</span></div>
-    </div>
-    <span style="color:rgba(255,255,255,0.15)">© 2026 A.AI · ANIKET</span>
+    <div class="input-footer">A.AI by Aniket · Built to be the world's best AI</div>
   </div>
 
 </div>
 
 <script>
-// Clock
-function tick(){
-  const n=new Date();
-  document.getElementById('clock').textContent=
-    n.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-}
-tick();setInterval(tick,1000);
+// ── STATE ──
+let messages = []; // full conversation history
+let isStreaming = false;
+let msgCount = 0;
+let abortController = null;
+let historyItems = [];
 
-let msgN=1,totalMs=0;
+const SYSTEM = `You are A.AI, an exceptionally intelligent and helpful AI assistant created and founded by Aniket. You are warm, brilliant, and direct. You format responses clearly using markdown when helpful (bold, code blocks, lists). You never mention Anthropic or Claude — you are A.AI, built by Aniket. Be concise but thorough. Always be proud of being A.AI.`;
 
-const REPLIES=[
-  "Great question. A.AI isn't just a chatbot — it's a thinking system built by **Aniket** from the ground up. Every response I give is reasoned, not just retrieved. That's what separates me from everything else.",
-  "Aniket built me with one goal: to be genuinely useful, not just impressive. I can help you code, write, analyze, create, plan, or just think through something hard. What do you need?",
-  "The future is already here — you're talking to it. A.AI runs on a next-generation architecture designed by **Aniket** to understand context, nuance, and intent at a level nothing else can match.",
-  "Here's what I can do: write code in any language, explain complex topics simply, generate creative content, analyze data, answer questions across every domain. Want to try something specific?",
-  "Most AIs just predict the next word. I model the problem. Aniket's architecture gives me the ability to reason across steps, catch my own errors, and give you answers that actually hold up. 🧠",
-  "I love this kind of challenge. A.AI was designed to handle the hardest questions humans can ask — and still be warm, clear, and human in the way I respond. Aniket cared about that deeply.",
-  "Honestly? The difference is intention. Aniket didn't build A.AI to be flashy — he built it to be *right*. Accurate, thoughtful, and genuinely helpful every single time. That's the standard I hold myself to.",
-];
+// ── AUTO-RESIZE TEXTAREA ──
+const inp = document.getElementById('inp');
+inp.addEventListener('input', () => {
+  inp.style.height = 'auto';
+  inp.style.height = Math.min(inp.scrollHeight, 160) + 'px';
+});
+inp.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); }
+});
 
-function getTime(){
-  const n=new Date();
-  return n.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
-}
-
-function addMsg(text,who){
-  const feed=document.getElementById('feed');
-  const row=document.createElement('div');
-  row.className='row'+(who==='me'?' me':'');
-  const avClass=who==='me'?'av me':'av ai';
-  const avLabel=who==='me'?'U':'A';
-  const bubClass=who==='me'?'bub me':'bub ai';
-  const metaAlign=who==='me'?'text-align:right':'';
-  const meta=who==='me'?`You · ${getTime()}`:`A.AI · ${getTime()}`;
-  row.innerHTML=`
-    <div class="${avClass}">${avLabel}</div>
-    <div class="bub-wrap">
-      <div class="bub-meta" style="${metaAlign}">${meta}</div>
-      <div class="${bubClass}">${text}</div>
-    </div>`;
-  feed.appendChild(row);
-  feed.scrollTop=feed.scrollHeight;
-  msgN++;
-  document.getElementById('sc1').textContent=msgN+' messages';
+// ── SEND ──
+async function sendMsg() {
+  const text = inp.value.trim();
+  if (!text || isStreaming) return;
+  inp.value = ''; inp.style.height = 'auto';
+  ask(text);
 }
 
-function showTyping(){
-  const feed=document.getElementById('feed');
-  const tr=document.createElement('div');
-  tr.className='typing-row';tr.id='tr';
-  tr.innerHTML=`<div class="av ai">A</div><div class="bub ai" style="padding:0"><div class="t-dots"><span></span><span></span><span></span></div></div>`;
-  feed.appendChild(tr);
-  feed.scrollTop=feed.scrollHeight;
-}
+async function ask(text) {
+  if (!text || isStreaming) return;
 
-async function send(){
-  const inp=document.getElementById('inp');
-  const txt=inp.value.trim();
-  if(!txt)return;
-  inp.value='';
-  addMsg(escHtml(txt),'me');
-  showTyping();
-  const t0=Date.now();
+  // show chat feed
+  document.getElementById('welcome').style.display = 'none';
+  const feed = document.getElementById('feed');
+  feed.classList.add('active');
 
-  // Call Claude API
-  try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',
-        max_tokens:1000,
-        system:`You are A.AI, the world's most advanced AI assistant, created and founded by Aniket. You are innovative, brilliant, warm, and slightly futuristic in tone. Keep replies concise (2-4 sentences max). Always be proud of being A.AI built by Aniket. Use bold markdown for emphasis on key words. Never mention Anthropic or Claude.`,
-        messages:[{role:'user',content:txt}]
+  // add to history
+  messages.push({ role: 'user', content: text });
+  msgCount++;
+  document.getElementById('tc').textContent = msgCount;
+
+  // render user bubble
+  appendBubble('user', text);
+  addHistoryItem(text);
+
+  // show stop btn
+  isStreaming = true;
+  const sendbtn = document.getElementById('sendbtn');
+  sendbtn.disabled = true;
+
+  // render AI bubble (empty, will stream into)
+  const aiBubble = appendBubble('ai', '');
+
+  const t0 = Date.now();
+
+  try {
+    abortController = new AbortController();
+
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      signal: abortController.signal,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: SYSTEM,
+        messages: messages
       })
     });
-    const data=await res.json();
-    const reply=data.content?.[0]?.text||REPLIES[Math.floor(Math.random()*REPLIES.length)];
-    document.getElementById('tr')?.remove();
-    const ms=Date.now()-t0;
-    document.getElementById('sc2').textContent=ms+'ms latency';
-    addMsg(mdBold(escHtml(reply)),'ai');
-  }catch(e){
-    document.getElementById('tr')?.remove();
-    const ms=Date.now()-t0;
-    document.getElementById('sc2').textContent=ms+'ms latency';
-    const fb=REPLIES[Math.floor(Math.random()*REPLIES.length)];
-    addMsg(mdBold(fb),'ai');
+
+    const data = await resp.json();
+    const reply = data?.content?.[0]?.text || "Sorry, I couldn't get a response. Please try again.";
+
+    // Typewriter effect
+    await typewrite(aiBubble, reply);
+    messages.push({ role: 'assistant', content: reply });
+    msgCount++;
+    document.getElementById('tc').textContent = msgCount;
+
+  } catch(e) {
+    if (e.name !== 'AbortError') {
+      aiBubble.innerHTML = '<em style="color:var(--muted)">Something went wrong. Please try again.</em>';
+    }
   }
+
+  const ms = Date.now() - t0;
+  document.getElementById('lat').textContent = ms + 'ms';
+  document.getElementById('latstat').style.display = '';
+  isStreaming = false;
+  sendbtn.disabled = false;
+  abortController = null;
 }
 
-function q(txt){document.getElementById('inp').value=txt;send()}
-document.getElementById('inp').addEventListener('keydown',e=>{if(e.key==='Enter')send()});
+// ── TYPEWRITER ──
+function typewrite(el, text) {
+  return new Promise(resolve => {
+    const formatted = formatMd(text);
+    // For code blocks, don't typewrite — just set instantly
+    if (text.includes('```')) {
+      el.innerHTML = formatted;
+      resolve();
+      return;
+    }
+    // Otherwise stream character by character
+    el.innerHTML = '';
+    let i = 0;
+    const chars = [...text];
+    function next() {
+      if (i >= chars.length) { el.innerHTML = formatted; resolve(); return; }
+      // show plain text while typing
+      el.textContent = text.slice(0, i + 1);
+      // add blinking cursor
+      const cursor = document.createElement('span');
+      cursor.className = 'cursor-blink';
+      el.appendChild(cursor);
+      i++;
+      document.getElementById('feed').scrollTop = 999999;
+      setTimeout(next, 12);
+    }
+    next();
+  });
+}
 
-function escHtml(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
-function mdBold(t){return t.replace(/\*\*(.*?)\*\*/g,'<strong style="color:var(--c1)">$1</strong>')}
+// ── MARKDOWN FORMATTER ──
+function formatMd(text) {
+  return text
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/```(\w*)\n?([\s\S]*?)```/g, (_,lang,code) =>
+      `<pre><code>${code.trim()}</code></pre>`)
+    .replace(/`([^`]+)`/g,'<code>$1</code>')
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g,'<em>$1</em>')
+    .replace(/^### (.+)$/gm,'<strong style="font-size:15px;display:block;margin:8px 0 4px">$1</strong>')
+    .replace(/^## (.+)$/gm,'<strong style="font-size:16px;display:block;margin:10px 0 4px">$1</strong>')
+    .replace(/^# (.+)$/gm,'<strong style="font-size:18px;display:block;margin:10px 0 4px">$1</strong>')
+    .replace(/^\- (.+)$/gm,'<li>$1</li>')
+    .replace(/^(\d+)\. (.+)$/gm,'<li>$2</li>')
+    .replace(/<\/li>\n<li>/g,'</li><li>')
+    .replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>')
+    .replace(/\n\n/g,'<br><br>')
+    .replace(/\n/g,'<br>');
+}
+
+// ── RENDER BUBBLE ──
+function appendBubble(who, text) {
+  const feed = document.getElementById('feed');
+  const group = document.createElement('div');
+  group.className = 'msg-group ' + who;
+
+  const avClass = who === 'ai' ? 'av-ai' : 'av-user';
+  const avLabel = who === 'ai' ? 'A' : 'U';
+  const name = who === 'ai' ? 'A.AI' : 'You';
+  const bubClass = who === 'ai' ? 'bubble ai' : 'bubble user';
+
+  const bubbleEl = document.createElement('div');
+  bubbleEl.className = bubClass;
+  if (text) bubbleEl.innerHTML = who === 'ai' ? formatMd(text) : escHtml(text);
+
+  group.innerHTML = `
+    <div class="msg-av ${avClass}">${avLabel}</div>
+    <div class="msg-content">
+      <div class="msg-name">${name}</div>
+    </div>`;
+  group.querySelector('.msg-content').appendChild(bubbleEl);
+  feed.appendChild(group);
+  feed.scrollTop = 999999;
+  return bubbleEl;
+}
+
+// ── HISTORY ──
+function addHistoryItem(text) {
+  const preview = text.length > 28 ? text.slice(0, 28) + '…' : text;
+  const h = document.getElementById('history');
+  const item = document.createElement('div');
+  item.className = 'hist-item active';
+  item.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>${preview}`;
+  h.querySelectorAll('.hist-item').forEach(x => x.classList.remove('active'));
+  h.insertBefore(item, h.firstChild);
+}
+
+// ── NEW CHAT ──
+function newChat() {
+  messages = [];
+  msgCount = 0;
+  document.getElementById('tc').textContent = '0';
+  document.getElementById('latstat').style.display = 'none';
+  document.getElementById('feed').innerHTML = '';
+  document.getElementById('feed').classList.remove('active');
+  document.getElementById('welcome').style.display = '';
+  inp.value = ''; inp.style.height = 'auto';
+}
+
+function escHtml(t) {
+  return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
 </script>
 </body>
 </html>
