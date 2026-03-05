@@ -3,599 +3,1032 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>A.AI by Aniket</title>
-<link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<title>A.AI — by Aniket</title>
+<link href="https://fonts.googleapis.com/css2?family=Mona+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --bg:#0c0c14;
-  --sidebar:#09090f;
-  --chat:#0f0f1a;
-  --surface:#16161f;
-  --border:#1e1e2d;
-  --accent:#6c63ff;
-  --accent2:#ff6584;
-  --green:#00e5a0;
-  --text:#e8e8f5;
-  --muted:#4a4a6a;
-  --light:#b8b8d0;
+  --bg:#0d1117;--surface:#161b22;--surface2:#21262d;
+  --border:#30363d;--border2:#21262d;
+  --text:#e6edf3;--muted:#7d8590;--light:#8b949e;
+  --accent:#238636;--accent-h:#2ea043;
+  --blue:#1f6feb;--blue-h:#388bfd;
+  --purple:#8957e5;
+  --red:#f85149;
+  --yellow:#d29922;
 }
-html,body{height:100%;overflow:hidden;background:var(--bg)}
-body{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);display:flex}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Mona Sans','Segoe UI',sans-serif}
 
-/* ══ SIDEBAR ══ */
-#sidebar{
-  width:260px;flex-shrink:0;
-  background:var(--sidebar);
-  border-right:1px solid var(--border);
-  display:flex;flex-direction:column;
-  height:100vh;
-  position:relative;
-  z-index:10;
+/* ════════════════════════════════
+   LOGIN PAGE
+════════════════════════════════ */
+#login-page{
+  min-height:100vh;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:20px;
+  background:var(--bg);
 }
 
-.sidebar-top{
-  padding:20px 16px 16px;
-  border-bottom:1px solid var(--border);
-}
+.gh-logo{margin-bottom:20px}
+.gh-logo svg{width:48px;height:48px;fill:var(--text)}
 
-.brand{display:flex;align-items:center;gap:12px;margin-bottom:20px}
-
-.brand-icon{
-  width:40px;height:40px;border-radius:12px;flex-shrink:0;
-  background:linear-gradient(135deg,var(--accent),var(--accent2));
-  display:flex;align-items:center;justify-content:center;
-  font-size:16px;font-weight:800;color:#fff;
-  box-shadow:0 4px 20px rgba(108,99,255,0.4);
-  font-family:'Clash Display',sans-serif;
-  letter-spacing:-0.5px;
-}
-
-.brand-info{display:flex;flex-direction:column;gap:1px}
-.brand-name{font-family:'Clash Display',sans-serif;font-size:18px;font-weight:700;letter-spacing:.5px;color:var(--text)}
-.brand-tag{font-size:10px;color:var(--muted);letter-spacing:1px}
-
-.new-chat-btn{
-  width:100%;padding:11px 16px;border-radius:10px;border:none;
-  background:linear-gradient(135deg,var(--accent),#8b83ff);
-  color:#fff;font-family:'Plus Jakarta Sans',sans-serif;
-  font-size:13px;font-weight:600;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;gap:8px;
-  transition:all .2s;letter-spacing:.3px;
-}
-.new-chat-btn:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(108,99,255,0.4)}
-
-.sidebar-section{
-  padding:14px 16px 8px;
-  font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;
-}
-
-.history{flex:1;overflow-y:auto;padding:0 8px 16px}
-.history::-webkit-scrollbar{width:0}
-
-.hist-item{
-  padding:10px 10px;border-radius:8px;cursor:pointer;
-  font-size:12.5px;color:var(--light);
-  transition:all .15s;display:flex;align-items:center;gap:8px;
-  margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-}
-.hist-item:hover{background:var(--surface);color:var(--text)}
-.hist-item.active{background:rgba(108,99,255,0.12);color:var(--accent)}
-
-.sidebar-bottom{
-  padding:14px 16px;
-  border-top:1px solid var(--border);
-}
-.founder-card{
-  background:rgba(108,99,255,0.08);
-  border:1px solid rgba(108,99,255,0.2);
-  border-radius:12px;
-  padding:12px 14px;
-}
-.fc-label{font-size:9px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px}
-.fc-name{font-family:'Clash Display',sans-serif;font-size:17px;font-weight:700;
-  background:linear-gradient(90deg,var(--accent),var(--accent2));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  letter-spacing:1px;
-}
-.fc-role{font-size:10px;color:var(--muted);margin-top:2px}
-
-/* ══ MAIN CHAT AREA ══ */
-#main{
-  flex:1;display:flex;flex-direction:column;
-  height:100vh;background:var(--chat);
-  position:relative;overflow:hidden;
-  min-width:0;
-}
-
-/* subtle gradient top */
-#main::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:200px;
-  background:radial-gradient(ellipse at 50% 0%,rgba(108,99,255,0.06),transparent);
-  pointer-events:none;z-index:0;
-}
-
-/* ── TOPBAR ── */
-#topbar{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:16px 28px;
-  border-bottom:1px solid var(--border);
-  flex-shrink:0;
-  position:relative;z-index:5;
-  background:rgba(15,15,26,0.8);
-  backdrop-filter:blur(20px);
-}
-
-.model-badge{
-  display:flex;align-items:center;gap:8px;
-  padding:7px 14px;border-radius:20px;
+.login-box{
+  width:100%;max-width:340px;
   background:var(--surface);
   border:1px solid var(--border);
-  font-size:12px;color:var(--light);font-weight:500;
+  border-radius:6px;padding:20px;
+  margin-bottom:16px;
 }
-.model-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:mdot 2s ease-in-out infinite}
-@keyframes mdot{0%,100%{opacity:1}50%{opacity:0.4}}
+.login-box h1{font-size:20px;font-weight:400;text-align:center;margin-bottom:20px;color:var(--text)}
 
-.topbar-right{display:flex;align-items:center;gap:10px}
-.top-stat{
-  font-size:11px;color:var(--muted);
-  padding:5px 12px;border-radius:8px;
-  background:var(--surface);border:1px solid var(--border);
-  letter-spacing:.5px;
+.form-group{margin-bottom:14px}
+.form-group label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(--text)}
+.form-group input{
+  width:100%;padding:8px 12px;
+  background:var(--bg);border:1px solid var(--border);
+  border-radius:6px;color:var(--text);font-size:14px;
+  font-family:inherit;outline:none;
+  transition:border-color .15s,box-shadow .15s;
 }
-.top-stat span{color:var(--accent)}
+.form-group input:focus{border-color:var(--blue-h);box-shadow:0 0 0 3px rgba(31,111,235,0.15)}
+.form-group input::placeholder{color:var(--muted)}
 
-/* ── WELCOME SCREEN ── */
-#welcome{
-  flex:1;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;
-  padding:40px 24px;
-  position:relative;z-index:2;
+.forgot-link{float:right;font-size:12px;color:var(--blue-h);text-decoration:none;margin-top:-4px}
+.forgot-link:hover{text-decoration:underline}
+
+.btn-green{
+  width:100%;padding:9px;border-radius:6px;border:none;
+  background:var(--accent);color:#fff;font-size:14px;font-weight:600;
+  cursor:pointer;transition:background .15s;font-family:inherit;
+  margin-top:4px;
+}
+.btn-green:hover{background:var(--accent-h)}
+
+.login-error{
+  display:none;font-size:12px;color:var(--red);
+  background:rgba(248,81,73,0.1);border:1px solid rgba(248,81,73,0.3);
+  border-radius:6px;padding:8px 12px;margin-top:10px;text-align:center;
 }
 
-.welcome-icon{
-  width:72px;height:72px;border-radius:20px;
-  background:linear-gradient(135deg,var(--accent),var(--accent2));
+.login-divider{
+  border:none;border-top:1px solid var(--border);margin:16px 0;
+}
+
+.oauth-btn{
+  width:100%;padding:8px;border-radius:6px;
+  border:1px solid var(--border);background:var(--surface2);
+  color:var(--text);font-size:13px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  font-family:inherit;margin-bottom:8px;transition:background .15s,border-color .15s;
+}
+.oauth-btn:hover{background:#30363d;border-color:var(--light)}
+
+.login-bottom{
+  width:100%;max-width:340px;
+  border:1px solid var(--border);border-radius:6px;
+  padding:14px;text-align:center;font-size:13px;color:var(--muted);
+}
+.login-bottom a{color:var(--blue-h);text-decoration:none}
+.login-bottom a:hover{text-decoration:underline}
+
+/* ════════════════════════════════
+   GITHUB REPO PAGE
+════════════════════════════════ */
+#repo-page{display:none;min-height:100vh;flex-direction:column}
+
+/* TOP NAV */
+.gh-nav{
+  background:#161b22;border-bottom:1px solid var(--border);
+  padding:0 16px;display:flex;align-items:center;gap:16px;
+  height:62px;flex-shrink:0;position:sticky;top:0;z-index:100;
+}
+
+.nav-logo{display:flex;align-items:center;gap:8px;color:var(--text);text-decoration:none}
+.nav-logo svg{width:28px;height:28px;fill:var(--text)}
+
+.nav-search{
+  flex:1;max-width:280px;
+  background:var(--bg);border:1px solid var(--border);
+  border-radius:6px;padding:6px 12px;
+  display:flex;align-items:center;gap:8px;
+}
+.nav-search input{
+  background:transparent;border:none;outline:none;
+  color:var(--text);font-size:13px;font-family:inherit;width:100%;
+}
+.nav-search input::placeholder{color:var(--muted)}
+.nav-search-key{
+  font-size:11px;color:var(--muted);border:1px solid var(--border);
+  border-radius:4px;padding:1px 5px;flex-shrink:0;
+}
+
+.nav-links{display:flex;align-items:center;gap:4px;margin-left:8px}
+.nav-link{
+  color:var(--text);text-decoration:none;font-size:13px;font-weight:500;
+  padding:6px 8px;border-radius:6px;transition:background .15s;
+  white-space:nowrap;
+}
+.nav-link:hover{background:var(--surface2)}
+
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.nav-avatar{
+  width:32px;height:32px;border-radius:50%;
+  background:linear-gradient(135deg,var(--purple),var(--blue));
   display:flex;align-items:center;justify-content:center;
-  font-family:'Clash Display',sans-serif;font-size:28px;font-weight:700;color:#fff;
-  box-shadow:0 8px 40px rgba(108,99,255,0.4);
-  margin-bottom:20px;
-  animation:iconFloat 4s ease-in-out infinite;
+  font-size:13px;font-weight:700;cursor:pointer;color:#fff;
+  flex-shrink:0;
 }
-@keyframes iconFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.nav-notif{
+  color:var(--light);cursor:pointer;padding:4px;
+  border-radius:6px;transition:background .15s;
+}
+.nav-notif:hover{background:var(--surface2)}
 
-.welcome-title{
-  font-family:'Clash Display',sans-serif;font-size:34px;font-weight:700;
-  text-align:center;margin-bottom:8px;letter-spacing:.5px;
+/* REPO HEADER */
+.repo-header{
+  border-bottom:1px solid var(--border);padding:16px 16px 0;
 }
-.welcome-sub{font-size:14px;color:var(--light);text-align:center;margin-bottom:32px;line-height:1.6;max-width:420px}
+.repo-header-inner{max-width:1280px;margin:0 auto}
+.repo-path{
+  display:flex;align-items:center;gap:6px;
+  font-size:20px;margin-bottom:8px;flex-wrap:wrap;
+}
+.repo-path .repo-icon{color:var(--muted)}
+.repo-path .repo-owner{color:var(--blue-h);text-decoration:none;font-weight:400}
+.repo-path .repo-owner:hover{text-decoration:underline}
+.repo-path .sep{color:var(--muted);font-weight:300}
+.repo-path .repo-name{font-weight:700}
+.public-badge{
+  font-size:11px;color:var(--muted);border:1px solid var(--border);
+  border-radius:20px;padding:1px 8px;margin-left:4px;font-weight:400;
+  align-self:center;
+}
 
-.suggestions{
-  display:grid;grid-template-columns:1fr 1fr;gap:10px;
-  max-width:520px;width:100%;
+.repo-desc{font-size:14px;color:var(--muted);margin-bottom:12px}
+
+.repo-tabs{display:flex;gap:0;border-bottom:none;overflow-x:auto}
+.tab{
+  display:flex;align-items:center;gap:6px;
+  padding:8px 14px;font-size:14px;color:var(--muted);
+  border-bottom:2px solid transparent;cursor:pointer;
+  text-decoration:none;white-space:nowrap;transition:color .15s;
 }
-.sug{
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--text);border-bottom-color:#f78166;font-weight:500}
+.tab-count{
+  background:var(--surface2);border-radius:20px;
+  padding:0 6px;font-size:11px;color:var(--muted);
+}
+
+/* REPO BODY */
+.repo-body{max-width:1280px;margin:0 auto;padding:24px 16px;display:flex;gap:24px}
+
+/* FILE BROWSER */
+.repo-main{flex:1;min-width:0}
+
+.branch-bar{
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:10px;margin-bottom:12px;
+}
+.branch-btn{
+  display:flex;align-items:center;gap:6px;
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:6px;padding:6px 12px;font-size:13px;
+  color:var(--text);cursor:pointer;font-weight:600;
+  transition:background .15s;
+}
+.branch-btn:hover{background:#30363d}
+.branch-btn svg{width:14px;height:14px;fill:var(--text)}
+
+.clone-btn{
+  display:flex;align-items:center;gap:6px;
+  background:var(--accent);border:none;border-radius:6px;
+  padding:6px 14px;font-size:13px;color:#fff;cursor:pointer;
+  font-weight:600;transition:background .15s;font-family:inherit;
+}
+.clone-btn:hover{background:var(--accent-h)}
+
+.commit-bar{
   background:var(--surface);border:1px solid var(--border);
-  border-radius:14px;padding:14px 16px;cursor:pointer;
-  transition:all .2s;
+  border-radius:6px 6px 0 0;padding:12px 16px;
+  display:flex;align-items:center;justify-content:space-between;
 }
-.sug:hover{border-color:var(--accent);background:rgba(108,99,255,0.06);transform:translateY(-2px);box-shadow:0 8px 24px rgba(108,99,255,0.12)}
-.sug-icon{font-size:18px;margin-bottom:6px}
-.sug-text{font-size:12.5px;color:var(--light);line-height:1.5}
+.commit-info{display:flex;align-items:center;gap:10px}
+.commit-av{
+  width:22px;height:22px;border-radius:50%;
+  background:linear-gradient(135deg,var(--purple),var(--blue));
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:700;color:#fff;flex-shrink:0;
+}
+.commit-text{font-size:13px}
+.commit-text strong{color:var(--text)}
+.commit-text span{color:var(--muted)}
+.commit-hash{
+  font-size:12px;color:var(--blue-h);background:var(--surface2);
+  border:1px solid var(--border);border-radius:6px;padding:2px 8px;
+  font-family:monospace;cursor:pointer;
+}
+.commit-hash:hover{background:#30363d}
 
-/* ── MESSAGES ── */
+.file-table{
+  border:1px solid var(--border);border-top:none;
+  border-radius:0 0 6px 6px;overflow:hidden;
+}
+.file-row{
+  display:flex;align-items:center;gap:12px;
+  padding:8px 16px;border-bottom:1px solid var(--border2);
+  font-size:13px;transition:background .1s;cursor:pointer;
+}
+.file-row:last-child{border-bottom:none}
+.file-row:hover{background:var(--surface2)}
+.file-icon{width:16px;height:16px;flex-shrink:0;fill:var(--muted)}
+.file-name{color:var(--blue-h);flex:1;text-decoration:none}
+.file-name:hover{text-decoration:underline;color:var(--blue-h)}
+.file-commit{color:var(--muted);flex:2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.file-time{color:var(--muted);flex-shrink:0;white-space:nowrap}
+
+/* README */
+.readme-box{
+  border:1px solid var(--border);border-radius:6px;
+  margin-top:16px;overflow:hidden;
+}
+.readme-header{
+  background:var(--surface);border-bottom:1px solid var(--border);
+  padding:10px 16px;display:flex;align-items:center;gap:8px;
+  font-size:13px;font-weight:600;
+}
+.readme-body{padding:24px 28px;font-size:14px;line-height:1.7;color:var(--text)}
+.readme-body h1{font-size:24px;border-bottom:1px solid var(--border);padding-bottom:10px;margin-bottom:16px}
+.readme-body h2{font-size:18px;border-bottom:1px solid var(--border2);padding-bottom:8px;margin:20px 0 12px}
+.readme-body h3{font-size:16px;margin:16px 0 8px}
+.readme-body p{margin-bottom:12px;color:var(--light)}
+.readme-body code{background:var(--surface2);padding:2px 6px;border-radius:4px;font-family:monospace;font-size:12.5px;color:#e6edf3}
+.readme-body pre{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:16px;overflow-x:auto;margin:12px 0}
+.readme-body pre code{background:none;padding:0}
+.readme-body ul{padding-left:20px;margin-bottom:12px}
+.readme-body li{margin-bottom:4px;color:var(--light)}
+.readme-body a{color:var(--blue-h)}
+.readme-body strong{color:var(--text)}
+
+.badge-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.gh-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;
+}
+.badge-blue{background:rgba(31,111,235,0.15);color:var(--blue-h);border:1px solid rgba(31,111,235,0.3)}
+.badge-green{background:rgba(35,134,54,0.15);color:#3fb950;border:1px solid rgba(35,134,54,0.3)}
+.badge-purple{background:rgba(137,87,229,0.15);color:#bc8cff;border:1px solid rgba(137,87,229,0.3)}
+.badge-yellow{background:rgba(210,153,34,0.15);color:#e3b341;border:1px solid rgba(210,153,34,0.3)}
+
+/* SIDEBAR */
+.repo-sidebar{width:260px;flex-shrink:0}
+.sidebar-card{border:1px solid var(--border);border-radius:6px;padding:16px;margin-bottom:16px}
+.sidebar-card h3{font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text)}
+.sidebar-item{
+  display:flex;align-items:center;gap:8px;
+  font-size:13px;color:var(--muted);margin-bottom:8px;
+}
+.sidebar-item:last-child{margin-bottom:0}
+.sidebar-item svg{width:16px;height:16px;fill:var(--muted);flex-shrink:0}
+.sidebar-item a{color:var(--blue-h);text-decoration:none}
+.sidebar-item a:hover{text-decoration:underline}
+.lang-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+.topic-tag{
+  display:inline-block;font-size:11px;padding:3px 10px;
+  border-radius:20px;background:rgba(31,111,235,0.1);
+  color:var(--blue-h);border:1px solid rgba(31,111,235,0.2);
+  margin:2px;cursor:pointer;transition:background .15s;
+}
+.topic-tag:hover{background:rgba(31,111,235,0.2)}
+
+.stat-row2{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:13px}
+.stat-row2:last-child{margin-bottom:0}
+.star-btn{
+  display:flex;align-items:center;gap:6px;
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:6px;padding:5px 12px;font-size:13px;
+  color:var(--text);cursor:pointer;font-weight:600;
+  transition:background .15s;width:100%;justify-content:center;margin-bottom:8px;
+}
+.star-btn:hover{background:#30363d}
+
+/* DEMO BUTTON */
+.demo-btn{
+  display:flex;align-items:center;gap:8px;
+  background:linear-gradient(135deg,var(--purple),var(--blue));
+  border:none;border-radius:6px;padding:10px 16px;
+  font-size:14px;color:#fff;cursor:pointer;
+  font-weight:600;width:100%;justify-content:center;
+  font-family:inherit;transition:opacity .2s;margin-bottom:8px;
+}
+.demo-btn:hover{opacity:0.9}
+
+/* ════════════════════════════════
+   CHAT PAGE
+════════════════════════════════ */
+#chat-page{
+  display:none;height:100vh;flex-direction:column;
+  background:#0d1117;
+}
+
+/* CHAT NAV */
+.chat-nav{
+  background:var(--surface);border-bottom:1px solid var(--border);
+  padding:0 16px;display:flex;align-items:center;justify-content:space-between;
+  height:56px;flex-shrink:0;
+}
+.chat-nav-brand{
+  display:flex;align-items:center;gap:10px;
+  font-size:16px;font-weight:700;
+}
+.chat-nav-icon{
+  width:32px;height:32px;border-radius:8px;
+  background:linear-gradient(135deg,var(--purple),var(--blue));
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:800;color:#fff;
+}
+.back-btn{
+  display:flex;align-items:center;gap:6px;
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:6px;padding:6px 12px;font-size:13px;
+  color:var(--text);cursor:pointer;font-family:inherit;
+  transition:background .15s;
+}
+.back-btn:hover{background:#30363d}
+
+/* CHAT LAYOUT */
+.chat-wrap{flex:1;display:flex;overflow:hidden}
+
+/* SIDEBAR */
+.chat-sidebar{
+  width:240px;flex-shrink:0;background:var(--surface);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.chat-sidebar-top{padding:12px}
+.new-btn{
+  width:100%;padding:8px;border-radius:6px;border:1px solid var(--border);
+  background:transparent;color:var(--text);font-size:13px;font-weight:500;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;
+  font-family:inherit;transition:background .15s;
+}
+.new-btn:hover{background:var(--surface2)}
+.chat-hist{flex:1;overflow-y:auto;padding:4px 8px}
+.chat-hist::-webkit-scrollbar{width:0}
+.ch-item{
+  padding:8px 10px;border-radius:6px;font-size:12.5px;
+  color:var(--muted);cursor:pointer;transition:all .15s;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  margin-bottom:2px;
+}
+.ch-item:hover{background:var(--surface2);color:var(--text)}
+.ch-item.active{background:rgba(31,111,235,0.12);color:var(--blue-h)}
+.chat-sidebar-bottom{
+  padding:12px;border-top:1px solid var(--border);
+  font-size:12px;color:var(--muted);display:flex;align-items:center;gap:8px;
+}
+.cs-av{
+  width:28px;height:28px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,var(--purple),var(--blue));
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;color:#fff;
+}
+
+/* CHAT MAIN */
+.chat-main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+
 #feed{
   flex:1;overflow-y:auto;
   padding:24px 0;
-  display:none;flex-direction:column;
-  position:relative;z-index:2;
   scroll-behavior:smooth;
 }
-#feed.active{display:flex}
 #feed::-webkit-scrollbar{width:4px}
-#feed::-webkit-scrollbar-track{background:transparent}
 #feed::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
 
-.msg-group{
-  padding:16px 28px;
-  display:flex;gap:16px;
-  animation:fadeIn .3s ease forwards;
-  max-width:900px;width:100%;margin:0 auto;
-  box-sizing:border-box;
+#welcome-screen{
+  flex:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:40px 20px;text-align:center;
 }
-@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.w-icon{
+  width:64px;height:64px;border-radius:16px;
+  background:linear-gradient(135deg,var(--purple),var(--blue));
+  display:flex;align-items:center;justify-content:center;
+  font-size:26px;font-weight:800;color:#fff;
+  margin-bottom:20px;box-shadow:0 8px 32px rgba(137,87,229,0.3);
+}
+.w-title{font-size:28px;font-weight:700;margin-bottom:8px}
+.w-sub{font-size:14px;color:var(--muted);max-width:420px;margin:0 auto 28px;line-height:1.6}
 
-.msg-group.user{justify-content:flex-end}
-.msg-group.user .msg-av{order:2}
-.msg-group.user .msg-content{order:1;align-items:flex-end}
+.suggestions{display:grid;grid-template-columns:1fr 1fr;gap:8px;max-width:500px;width:100%}
+.sug{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:8px;padding:12px 14px;cursor:pointer;
+  font-size:12.5px;color:var(--light);text-align:left;
+  transition:all .15s;line-height:1.5;
+}
+.sug:hover{border-color:var(--blue);background:rgba(31,111,235,0.06)}
+
+.msg-wrap{max-width:760px;margin:0 auto;padding:0 20px;width:100%}
+.msg-row{
+  display:flex;gap:14px;padding:14px 0;
+  animation:msgFade .25s ease forwards;opacity:0;
+}
+@keyframes msgFade{to{opacity:1}}
+.msg-row.user{justify-content:flex-end}
+.msg-row.user .msg-av{order:2}
+.msg-row.user .msg-body{order:1;align-items:flex-end}
 
 .msg-av{
-  width:36px;height:36px;border-radius:11px;flex-shrink:0;
+  width:34px;height:34px;border-radius:8px;flex-shrink:0;
   display:flex;align-items:center;justify-content:center;
-  font-size:13px;font-weight:700;
-  align-self:flex-start;margin-top:2px;
+  font-size:12px;font-weight:700;align-self:flex-start;margin-top:2px;
 }
-.av-ai{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;box-shadow:0 2px 12px rgba(108,99,255,0.3)}
-.av-user{background:var(--surface);border:1px solid var(--border);color:var(--accent)}
+.av-a{background:linear-gradient(135deg,var(--purple),var(--blue));color:#fff}
+.av-u{background:var(--surface2);border:1px solid var(--border);color:var(--blue-h)}
 
-.msg-content{display:flex;flex-direction:column;gap:4px;max-width:75%;min-width:0}
-.msg-name{font-size:11px;color:var(--muted);letter-spacing:.5px;padding:0 4px}
+.msg-body{display:flex;flex-direction:column;gap:4px;max-width:80%}
+.msg-name{font-size:11px;color:var(--muted);padding:0 4px}
+.msg-row.user .msg-name{text-align:right}
 
-.bubble{
-  padding:13px 17px;border-radius:16px;
-  font-size:14px;line-height:1.75;
-  word-break:break-word;
-}
-.bubble.ai{
-  background:var(--surface);
-  border:1px solid var(--border);
-  border-top-left-radius:4px;
-  color:var(--text);
-}
-.bubble.user{
-  background:linear-gradient(135deg,var(--accent),#8b83ff);
-  color:#fff;
-  border-top-right-radius:4px;
-}
-
-/* markdown-ish */
-.bubble strong{font-weight:600;color:inherit}
-.bubble.ai strong{color:#c8c4ff}
-.bubble code{
-  background:rgba(108,99,255,0.15);padding:2px 6px;border-radius:4px;
-  font-family:monospace;font-size:12.5px;color:#c8c4ff;
-}
-.bubble pre{
-  background:rgba(0,0,0,0.3);border:1px solid var(--border);
-  border-radius:10px;padding:14px;margin:8px 0;overflow-x:auto;
-}
-.bubble pre code{background:none;padding:0;font-size:12px;color:#b8f0e0}
-.bubble ul,.bubble ol{padding-left:20px;margin:6px 0}
+.bubble{padding:12px 16px;border-radius:12px;font-size:14px;line-height:1.75;word-break:break-word}
+.bubble.ai{background:var(--surface);border:1px solid var(--border);border-top-left-radius:3px;color:var(--text)}
+.bubble.user{background:var(--blue);color:#fff;border-top-right-radius:3px}
+.bubble strong{color:#c8d3e8}
+.bubble.user strong{color:#fff;font-weight:600}
+.bubble code{background:rgba(255,255,255,0.1);padding:2px 6px;border-radius:4px;font-family:monospace;font-size:12.5px}
+.bubble.ai code{background:var(--surface2)}
+.bubble pre{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:14px;margin:8px 0;overflow-x:auto}
+.bubble pre code{background:none;padding:0;font-size:12px}
+.bubble ul,.bubble ol{padding-left:18px;margin:6px 0}
 .bubble li{margin:3px 0}
 
-/* typing cursor */
-.cursor-blink{display:inline-block;width:2px;height:16px;background:var(--accent);margin-left:2px;vertical-align:middle;animation:blink .7s step-end infinite}
-@keyframes blink{50%{opacity:0}}
+.typing-dots{display:flex;align-items:center;gap:4px;padding:14px 16px}
+.typing-dots span{width:7px;height:7px;border-radius:50%;background:var(--muted);animation:td .9s ease-in-out infinite}
+.typing-dots span:nth-child(2){animation-delay:.15s}
+.typing-dots span:nth-child(3){animation-delay:.3s}
+@keyframes td{0%,60%,100%{transform:scale(1);opacity:.4}30%{transform:scale(1.4);opacity:1}}
 
-/* ── INPUT AREA ── */
-#input-area{
-  flex-shrink:0;padding:16px 28px 20px;
-  position:relative;z-index:5;
-  background:linear-gradient(to top,var(--chat) 80%,transparent);
+.cursor-blink{display:inline-block;width:2px;height:15px;background:var(--blue-h);margin-left:1px;vertical-align:middle;animation:cb .6s step-end infinite}
+@keyframes cb{50%{opacity:0}}
+
+/* INPUT */
+.chat-input-area{
+  flex-shrink:0;padding:12px 20px 16px;
+  background:linear-gradient(to top,#0d1117 70%,transparent);
 }
-
-.input-box{
-  max-width:860px;margin:0 auto;
-  background:var(--surface);
-  border:1px solid var(--border);
-  border-radius:16px;
-  display:flex;align-items:flex-end;gap:10px;
-  padding:12px 12px 12px 18px;
+.input-container{
+  max-width:760px;margin:0 auto;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:12px;overflow:hidden;
   transition:border-color .2s,box-shadow .2s;
 }
-.input-box:focus-within{
-  border-color:rgba(108,99,255,0.5);
-  box-shadow:0 0 0 3px rgba(108,99,255,0.08);
+.input-container:focus-within{
+  border-color:rgba(31,111,235,0.5);
+  box-shadow:0 0 0 3px rgba(31,111,235,0.1);
 }
-
+.input-row{display:flex;align-items:flex-end;padding:8px 8px 8px 16px;gap:8px}
 #inp{
   flex:1;background:transparent;border:none;outline:none;
-  color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;
-  font-size:14px;resize:none;
-  min-height:24px;max-height:160px;line-height:1.6;
-  overflow-y:auto;
-  padding:2px 0;
+  color:var(--text);font-family:inherit;font-size:14px;
+  resize:none;min-height:24px;max-height:160px;line-height:1.6;
+  overflow-y:auto;padding:4px 0;
 }
 #inp::placeholder{color:var(--muted)}
 #inp::-webkit-scrollbar{width:0}
-
 .send-btn{
-  width:40px;height:40px;border-radius:10px;border:none;flex-shrink:0;
-  background:linear-gradient(135deg,var(--accent),#8b83ff);
-  color:#fff;cursor:pointer;
+  width:36px;height:36px;border-radius:8px;border:none;flex-shrink:0;
+  background:var(--blue);color:#fff;cursor:pointer;
   display:flex;align-items:center;justify-content:center;
-  transition:all .2s;
+  transition:all .15s;
 }
-.send-btn:hover{transform:scale(1.05);box-shadow:0 4px 16px rgba(108,99,255,0.4)}
-.send-btn:disabled{opacity:0.4;cursor:not-allowed;transform:none;box-shadow:none}
-.send-btn svg{width:16px;height:16px;fill:#fff}
-
-.stop-btn{
-  width:40px;height:40px;border-radius:10px;border:none;flex-shrink:0;
-  background:var(--surface);border:1px solid var(--border);
-  color:var(--accent2);cursor:pointer;
-  display:flex;align-items:center;justify-content:center;
-  transition:all .2s;font-size:14px;
+.send-btn:hover:not(:disabled){background:var(--blue-h);transform:scale(1.05)}
+.send-btn:disabled{opacity:.4;cursor:not-allowed}
+.send-btn svg{width:15px;height:15px;fill:#fff}
+.input-footer-text{
+  max-width:760px;margin:6px auto 0;
+  font-size:11px;color:var(--muted);text-align:center;
 }
-.stop-btn:hover{border-color:var(--accent2);background:rgba(255,101,132,0.08)}
 
-.input-footer{
-  max-width:860px;margin:8px auto 0;
-  font-size:11px;color:var(--muted);text-align:center;letter-spacing:.3px;
+@media(max-width:700px){
+  .repo-sidebar,.chat-sidebar{display:none}
+  .suggestions{grid-template-columns:1fr}
+  .repo-body{flex-direction:column}
 }
 </style>
 </head>
 <body>
 
-<!-- SIDEBAR -->
-<div id="sidebar">
-  <div class="sidebar-top">
-    <div class="brand">
-      <div class="brand-icon">A</div>
-      <div class="brand-info">
-        <div class="brand-name">A.AI</div>
-        <div class="brand-tag">by Aniket</div>
-      </div>
+<!-- ════ LOGIN PAGE ════ -->
+<div id="login-page">
+  <div class="gh-logo">
+    <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+      <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+    </svg>
+  </div>
+
+  <div class="login-box">
+    <h1>Sign in to GitHub</h1>
+    <div class="form-group">
+      <label>Username or email address</label>
+      <input type="text" id="username" placeholder="aniket" autocomplete="username"/>
     </div>
-    <button class="new-chat-btn" onclick="newChat()">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      New Chat
+    <div class="form-group">
+      <label>
+        Password
+        <a href="#" class="forgot-link" onclick="return false">Forgot password?</a>
+      </label>
+      <input type="password" id="password" placeholder="••••••••" autocomplete="current-password"
+        onkeydown="if(event.key==='Enter')doLogin()"/>
+    </div>
+    <button class="btn-green" onclick="doLogin()">Sign in</button>
+    <div class="login-error" id="login-error">Incorrect username or password.</div>
+    <hr class="login-divider"/>
+    <button class="oauth-btn" onclick="doLogin()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+      Sign in with SSO
+    </button>
+    <button class="oauth-btn" onclick="doLogin()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+      Sign in with Google
     </button>
   </div>
 
-  <div class="sidebar-section">Recent</div>
-  <div class="history" id="history"></div>
+  <div class="login-bottom">
+    New to GitHub? <a href="#" onclick="doLogin();return false">Create an account</a>
+  </div>
 
-  <div class="sidebar-bottom">
-    <div class="founder-card">
-      <div class="fc-label">Founder & Creator</div>
-      <div class="fc-name">ANIKET</div>
-      <div class="fc-role">Chief AI Architect · A.AI</div>
-    </div>
+  <div style="margin-top:16px;font-size:12px;color:var(--muted);text-align:center">
+    <strong style="color:var(--light)">Demo credentials:</strong> username: <code style="background:var(--surface2);padding:2px 6px;border-radius:4px;color:var(--blue-h)">aniket</code> · password: <code style="background:var(--surface2);padding:2px 6px;border-radius:4px;color:var(--blue-h)">aai2026</code>
   </div>
 </div>
 
-<!-- MAIN -->
-<div id="main">
+<!-- ════ REPO PAGE ════ -->
+<div id="repo-page">
 
-  <!-- TOPBAR -->
-  <div id="topbar">
-    <div class="model-badge">
-      <div class="model-dot"></div>
-      A.AI · Latest Model
+  <!-- NAV -->
+  <nav class="gh-nav">
+    <a class="nav-logo" href="#">
+      <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+    </a>
+    <div class="nav-search">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="var(--muted)"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.656a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/></svg>
+      <input type="text" placeholder="Search or jump to..." readonly/>
+      <span class="nav-search-key">/</span>
     </div>
-    <div class="topbar-right">
-      <div class="top-stat">Messages: <span id="tc">0</span></div>
-      <div class="top-stat" id="latstat" style="display:none">Last: <span id="lat">—</span></div>
+    <div class="nav-links">
+      <a class="nav-link" href="#">Pull requests</a>
+      <a class="nav-link" href="#">Issues</a>
+      <a class="nav-link" href="#">Marketplace</a>
+      <a class="nav-link" href="#">Explore</a>
+    </div>
+    <div class="nav-right">
+      <span class="nav-notif">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="var(--light)"><path d="M8 16a2 2 0 0 0 1.985-1.75c.017-.137-.097-.25-.235-.25h-3.5c-.138 0-.252.113-.235.25A2 2 0 0 0 8 16zm.25-14.75a.75.75 0 0 0-1.5 0v.534a5.5 5.5 0 0 0-4.5 5.41v1.784c0 .827-.418 1.597-1.113 2.046l-.405.258A.75.75 0 0 0 .75 12.5h14.5a.75.75 0 0 0 .418-1.218l-.405-.258A2.443 2.443 0 0 1 14.25 9V7.194a5.5 5.5 0 0 0-4.5-5.41V1.25z"/></svg>
+      </span>
+      <div class="nav-avatar" title="aniket">A</div>
+    </div>
+  </nav>
+
+  <!-- REPO HEADER -->
+  <div class="repo-header">
+    <div class="repo-header-inner">
+      <div class="repo-path">
+        <svg class="repo-icon" width="16" height="16" viewBox="0 0 16 16" fill="var(--muted)"><path d="M2 2.5A2.5 2.5 0 0 1 4.5 0h8.75a.75.75 0 0 1 .75.75v12.5a.75.75 0 0 1-.75.75h-2.5a.75.75 0 0 1 0-1.5h1.75v-2h-8a1 1 0 0 0-.714 1.7.75.75 0 1 1-1.072 1.05A2.495 2.495 0 0 1 2 11.5v-9zm10.5-1V9h-8c-.356 0-.694.074-1 .208V2.5a1 1 0 0 1 1-1h8z"/></svg>
+        <a class="repo-owner" href="#">aniket</a>
+        <span class="sep">/</span>
+        <span class="repo-name">A.AI</span>
+        <span class="public-badge">Public</span>
+      </div>
+      <div class="repo-desc">🤖 The world's most advanced AI assistant — built from scratch by Aniket. Open source, production ready.</div>
+      <div class="repo-tabs">
+        <a class="tab active" href="#">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M2 2.5A2.5 2.5 0 0 1 4.5 0h8.75a.75.75 0 0 1 .75.75v12.5a.75.75 0 0 1-.75.75h-2.5a.75.75 0 0 1 0-1.5h1.75v-2h-8a1 1 0 0 0-.714 1.7.75.75 0 1 1-1.072 1.05A2.495 2.495 0 0 1 2 11.5v-9zm10.5-1V9h-8c-.356 0-.694.074-1 .208V2.5a1 1 0 0 1 1-1h8z"/></svg>
+          Code
+        </a>
+        <a class="tab" href="#"><span>Issues</span><span class="tab-count">3</span></a>
+        <a class="tab" href="#">Pull requests <span class="tab-count">1</span></a>
+        <a class="tab" href="#">Actions</a>
+        <a class="tab" href="#">Projects</a>
+        <a class="tab" href="#">Wiki</a>
+        <a class="tab" href="#">Security</a>
+        <a class="tab" href="#">Insights</a>
+      </div>
     </div>
   </div>
 
-  <!-- WELCOME -->
-  <div id="welcome">
-    <div class="welcome-icon">A</div>
-    <div class="welcome-title">Hello, I'm <span style="background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent">A.AI</span></div>
-    <div class="welcome-sub">Created by <strong>Aniket</strong> — the world's most innovative AI assistant. Ask me anything. I think, reason, and respond like no other AI.</div>
-    <div class="suggestions">
-      <div class="sug" onclick="ask('Explain quantum computing in simple terms')">
-        <div class="sug-icon">⚛️</div>
-        <div class="sug-text">Explain quantum computing in simple terms</div>
+  <!-- BODY -->
+  <div class="repo-body">
+
+    <!-- MAIN -->
+    <div class="repo-main">
+
+      <!-- BRANCH BAR -->
+      <div class="branch-bar">
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="branch-btn">
+            <svg viewBox="0 0 16 16"><path d="M11.75 2.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zm-2.25.75a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.492 2.492 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25zM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5zM3.5 3.25a.75.75 0 1 1 1.5 0 .75.75 0 0 1-1.5 0z"/></svg>
+            main
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M4.427 7.427l3.396 3.396a.25.25 0 0 0 .354 0l3.396-3.396A.25.25 0 0 0 11.396 7H4.604a.25.25 0 0 0-.177.427z"/></svg>
+          </button>
+          <span style="font-size:13px;color:var(--muted);align-self:center">3 branches · 2 tags</span>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="branch-btn" style="font-weight:400">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M5 3.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0zm0 2.122a2.25 2.25 0 1 0-1.5 0v.878A2.25 2.25 0 0 0 5.75 8.5h4.5a.75.75 0 0 1 .75.75v.128a2.251 2.251 0 1 0 1.5 0V9.25a2.25 2.25 0 0 0-2.25-2.25h-4.5A.75.75 0 0 1 5 6.25v-.878zm3.75 7.378a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0zm3 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0z"/></svg>
+            Go to file
+          </button>
+          <button class="clone-btn" onclick="showChat()">
+            🚀 Live Demo
+          </button>
+        </div>
       </div>
-      <div class="sug" onclick="ask('Write a Python function to sort a list')">
-        <div class="sug-icon">💻</div>
-        <div class="sug-text">Write a Python function to sort a list</div>
+
+      <!-- COMMIT BAR -->
+      <div class="commit-bar">
+        <div class="commit-info">
+          <div class="commit-av">A</div>
+          <div class="commit-text">
+            <strong>aniket</strong> <span>feat: upgraded neural core to v∞ · 2 hours ago</span>
+          </div>
+        </div>
+        <span class="commit-hash">a1f3c9e</span>
       </div>
-      <div class="sug" onclick="ask('What makes A.AI different from other AIs?')">
-        <div class="sug-icon">🚀</div>
-        <div class="sug-text">What makes A.AI different from other AIs?</div>
+
+      <!-- FILES -->
+      <div class="file-table">
+        <div class="file-row">
+          <svg class="file-icon" viewBox="0 0 16 16"><path d="M1.75 1A1.75 1.75 0 0 0 0 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0 0 16 13.25v-8.5A1.75 1.75 0 0 0 14.25 3H7.5a.25.25 0 0 1-.2-.1l-.9-1.2C6.07 1.26 5.55 1 5 1H1.75z"/></svg>
+          <a class="file-name" href="#">src</a>
+          <span class="file-commit">core neural architecture & api handlers</span>
+          <span class="file-time">2 hours ago</span>
+        </div>
+        <div class="file-row">
+          <svg class="file-icon" viewBox="0 0 16 16"><path d="M1.75 1A1.75 1.75 0 0 0 0 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0 0 16 13.25v-8.5A1.75 1.75 0 0 0 14.25 3H7.5a.25.25 0 0 1-.2-.1l-.9-1.2C6.07 1.26 5.55 1 5 1H1.75z"/></svg>
+          <a class="file-name" href="#">public</a>
+          <span class="file-commit">updated ui components and styles</span>
+          <span class="file-time">5 hours ago</span>
+        </div>
+        <div class="file-row">
+          <svg class="file-icon" viewBox="0 0 16 16"><path d="M1.75 1A1.75 1.75 0 0 0 0 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0 0 16 13.25v-8.5A1.75 1.75 0 0 0 14.25 3H7.5a.25.25 0 0 1-.2-.1l-.9-1.2C6.07 1.26 5.55 1 5 1H1.75z"/></svg>
+          <a class="file-name" href="#">models</a>
+          <span class="file-commit">add reasoning layer v3</span>
+          <span class="file-time">yesterday</span>
+        </div>
+        <div class="file-row">
+          <svg class="file-icon" viewBox="0 0 16 16"><path d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25V1.75zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V6h-2.75A1.75 1.75 0 0 1 9 4.25V1.5H3.75zm6 .5v2.25c0 .138.112.25.25.25h2.25L9.75 2z"/></svg>
+          <a class="file-name" href="#">.env.example</a>
+          <span class="file-commit">add api key config</span>
+          <span class="file-time">3 days ago</span>
+        </div>
+        <div class="file-row">
+          <svg class="file-icon" viewBox="0 0 16 16"><path d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25V1.75zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V6h-2.75A1.75 1.75 0 0 1 9 4.25V1.5H3.75zm6 .5v2.25c0 .138.112.25.25.25h2.25L9.75 2z"/></svg>
+          <a class="file-name" href="#">package.json</a>
+          <span class="file-commit">bump version to 2.0.0</span>
+          <span class="file-time">3 days ago</span>
+        </div>
+        <div class="file-row">
+          <svg class="file-icon" viewBox="0 0 16 16"><path d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25V1.75zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V6h-2.75A1.75 1.75 0 0 1 9 4.25V1.5H3.75zm6 .5v2.25c0 .138.112.25.25.25h2.25L9.75 2z"/></svg>
+          <a class="file-name" href="#">README.md</a>
+          <span class="file-commit">update docs with live demo</span>
+          <span class="file-time">2 hours ago</span>
+        </div>
+        <div class="file-row">
+          <svg class="file-icon" viewBox="0 0 16 16"><path d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25V1.75zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V6h-2.75A1.75 1.75 0 0 1 9 4.25V1.5H3.75zm6 .5v2.25c0 .138.112.25.25.25h2.25L9.75 2z"/></svg>
+          <a class="file-name" href="#">LICENSE</a>
+          <span class="file-commit">MIT license</span>
+          <span class="file-time">1 week ago</span>
+        </div>
       </div>
-      <div class="sug" onclick="ask('Write a short story about the future of AI')">
-        <div class="sug-icon">✍️</div>
-        <div class="sug-text">Write a short story about the future of AI</div>
+
+      <!-- README -->
+      <div class="readme-box">
+        <div class="readme-header">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="var(--muted)"><path d="M0 1.75A.75.75 0 0 1 .75 1h4.253c1.227 0 2.317.59 3 1.501A3.744 3.744 0 0 1 11.006 1h4.245a.75.75 0 0 1 .75.75v10.5a.75.75 0 0 1-.75.75h-4.507a2.25 2.25 0 0 0-1.591.659l-.622.621a.75.75 0 0 1-1.06 0l-.622-.621A2.25 2.25 0 0 0 5.258 13H.75a.75.75 0 0 1-.75-.75V1.75zm7.251 10.324.004-5.073-.002-2.253A2.25 2.25 0 0 0 5.003 2.5H1.5v9h3.757a3.75 3.75 0 0 1 1.994.574zM8.755 4.75l-.004 7.322a3.752 3.752 0 0 1 1.992-.572H14.5v-9h-3.495a2.25 2.25 0 0 0-2.25 2.25z"/></svg>
+          README.md
+        </div>
+        <div class="readme-body">
+          <h1>🤖 A.AI — World's Most Advanced AI</h1>
+          <div class="badge-row">
+            <span class="gh-badge badge-blue">⚡ v2.0.0</span>
+            <span class="gh-badge badge-green">✅ Live</span>
+            <span class="gh-badge badge-purple">🧠 AI Powered</span>
+            <span class="gh-badge badge-yellow">⭐ 12.4k stars</span>
+          </div>
+          <p>A.AI is a next-generation AI assistant created and founded by <strong>Aniket</strong>. It is designed to be smarter, faster, and more capable than any other AI in existence. Built from the ground up with a focus on reasoning, creativity, and helpfulness.</p>
+
+          <h2>🚀 Features</h2>
+          <ul>
+            <li>⚡ Real-time AI responses with streaming</li>
+            <li>🧠 Deep reasoning across any domain</li>
+            <li>💻 Code generation in all languages</li>
+            <li>🌍 Multilingual support</li>
+            <li>📱 Fully responsive — works on all devices</li>
+            <li>🔒 Secure login system</li>
+            <li>🎨 Beautiful GitHub-style interface</li>
+          </ul>
+
+          <h2>⚙️ Quick Start</h2>
+          <pre><code># Clone the repo
+git clone https://github.com/aniket/A.AI.git
+cd A.AI
+
+# Install dependencies
+npm install
+
+# Set your API key
+cp .env.example .env
+
+# Run
+npm start</code></pre>
+
+          <h2>🌐 Live Demo</h2>
+          <p>Click the <strong>🚀 Live Demo</strong> button above to try A.AI right now in your browser — no setup required.</p>
+
+          <h2>👤 Author</h2>
+          <p>Built with ❤️ by <strong>Aniket</strong> — Chief AI Architect & Founder of A.AI.</p>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- FEED -->
-  <div id="feed"></div>
+    <!-- SIDEBAR -->
+    <div class="repo-sidebar">
+      <div class="sidebar-card">
+        <h3>About</h3>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:10px;line-height:1.5">World's most advanced AI — built by Aniket 🤖⚡</p>
+        <div class="sidebar-item">
+          <svg viewBox="0 0 16 16"><path d="M8 .25a7.75 7.75 0 1 0 0 15.5A7.75 7.75 0 0 0 8 .25zM2.75 8a5.25 5.25 0 1 1 10.5 0 5.25 5.25 0 0 1-10.5 0z"/></svg>
+          <a href="#">a-ai.vercel.app</a>
+        </div>
+        <div class="sidebar-item">
+          <svg viewBox="0 0 16 16"><path d="M1 2.75A.75.75 0 0 1 1.75 2h12.5a.75.75 0 0 1 0 1.5H1.75A.75.75 0 0 1 1 2.75zm0 5A.75.75 0 0 1 1.75 7h12.5a.75.75 0 0 1 0 1.5H1.75A.75.75 0 0 1 1 7.75zM1.75 12h12.5a.75.75 0 0 1 0 1.5H1.75a.75.75 0 0 1 0-1.5z"/></svg>
+          MIT License
+        </div>
+        <div style="margin-top:10px">
+          <div class="topic-tag">artificial-intelligence</div>
+          <div class="topic-tag">chatbot</div>
+          <div class="topic-tag">nodejs</div>
+          <div class="topic-tag">aniket</div>
+          <div class="topic-tag">open-source</div>
+        </div>
+      </div>
 
-  <!-- INPUT -->
-  <div id="input-area">
-    <div class="input-box" id="inputbox">
-      <textarea id="inp" placeholder="Message A.AI…" rows="1"></textarea>
-      <button class="send-btn" id="sendbtn" onclick="sendMsg()">
-        <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
-      </button>
+      <div class="sidebar-card">
+        <button class="star-btn">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.751.751 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25zm0 2.445L6.615 5.5a.75.75 0 0 1-.564.41l-3.097.45 2.24 2.184a.75.75 0 0 1 .216.664l-.528 3.084 2.769-1.456a.75.75 0 0 1 .698 0l2.77 1.456-.53-3.084a.75.75 0 0 1 .216-.664l2.24-2.183-3.096-.45a.75.75 0 0 1-.564-.41L8 2.694z"/></svg>
+          Star
+          <span style="background:var(--surface);border-radius:20px;padding:0 8px;font-size:12px;color:var(--muted);margin-left:4px">12.4k</span>
+        </button>
+        <div class="stat-row2"><span style="color:var(--muted)">👁 Watching</span><span style="color:var(--text)">347</span></div>
+        <div class="stat-row2"><span style="color:var(--muted)">🍴 Forks</span><span style="color:var(--text)">2.1k</span></div>
+        <div class="stat-row2"><span style="color:var(--muted)">🐛 Issues</span><span style="color:var(--text)">3 open</span></div>
+      </div>
+
+      <div class="sidebar-card">
+        <h3>Languages</h3>
+        <div style="height:8px;border-radius:4px;overflow:hidden;display:flex;margin-bottom:10px">
+          <div style="width:58%;background:#f1e05a"></div>
+          <div style="width:22%;background:#3572A5"></div>
+          <div style="width:12%;background:#e34c26"></div>
+          <div style="width:8%;background:#563d7c"></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div class="sidebar-item"><div class="lang-dot" style="background:#f1e05a"></div>JavaScript 58%</div>
+          <div class="sidebar-item"><div class="lang-dot" style="background:#3572A5"></div>Python 22%</div>
+          <div class="sidebar-item"><div class="lang-dot" style="background:#e34c26"></div>HTML 12%</div>
+          <div class="sidebar-item"><div class="lang-dot" style="background:#563d7c"></div>CSS 8%</div>
+        </div>
+      </div>
     </div>
-    <div class="input-footer">A.AI by Aniket · Built to be the world's best AI</div>
+
+  </div>
+</div>
+
+<!-- ════ CHAT PAGE ════ -->
+<div id="chat-page">
+
+  <div class="chat-nav">
+    <div class="chat-nav-brand">
+      <div class="chat-nav-icon">A</div>
+      A.AI
+      <span style="font-size:11px;color:var(--muted);font-weight:400;margin-left:4px">by Aniket</span>
+    </div>
+    <button class="back-btn" onclick="showRepo()">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M7.78 12.53a.75.75 0 0 1-1.06 0L2.47 8.28a.75.75 0 0 1 0-1.06l4.25-4.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042L4.81 7h7.44a.75.75 0 0 1 0 1.5H4.81l2.97 2.97a.75.75 0 0 1 0 1.06z"/></svg>
+      Back to Repo
+    </button>
   </div>
 
+  <div class="chat-wrap">
+
+    <!-- SIDEBAR -->
+    <div class="chat-sidebar">
+      <div class="chat-sidebar-top">
+        <button class="new-btn" onclick="newChat()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          New chat
+        </button>
+      </div>
+      <div class="chat-hist" id="chatHist"></div>
+      <div class="chat-sidebar-bottom">
+        <div class="cs-av">A</div>
+        <div>
+          <div style="color:var(--text);font-weight:500;font-size:13px">aniket</div>
+          <div style="font-size:11px">Founder · A.AI</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN -->
+    <div class="chat-main">
+
+      <div id="welcome-screen">
+        <div class="w-icon">A</div>
+        <div class="w-title">How can I help you?</div>
+        <div class="w-sub">I'm <strong>A.AI</strong>, created by <strong>Aniket</strong>. Ask me anything — coding, writing, analysis, math, creative work, or just a chat.</div>
+        <div class="suggestions">
+          <div class="sug" onclick="ask('Explain how neural networks work')">🧠 Explain how neural networks work</div>
+          <div class="sug" onclick="ask('Write a Python script to scrape a website')">💻 Write a Python web scraper</div>
+          <div class="sug" onclick="ask('What are the best practices for building a REST API?')">🔧 Best practices for REST APIs</div>
+          <div class="sug" onclick="ask('Write a poem about artificial intelligence')">✍️ Write a poem about AI</div>
+        </div>
+      </div>
+
+      <div id="feed"></div>
+
+      <div class="chat-input-area">
+        <div class="input-container">
+          <div class="input-row">
+            <textarea id="inp" placeholder="Message A.AI…" rows="1"></textarea>
+            <button class="send-btn" id="sendbtn" onclick="sendMsg()">
+              <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="input-footer-text">A.AI by Aniket · The world's most advanced AI</div>
+      </div>
+
+    </div>
+  </div>
 </div>
 
 <script>
-// ── STATE ──
-let messages = []; // full conversation history
-let isStreaming = false;
-let msgCount = 0;
-let abortController = null;
-let historyItems = [];
+// ── LOGIN ──
+const CREDS = { username: 'aniket', password: 'aai2026' };
 
-const SYSTEM = `You are A.AI, an exceptionally intelligent and helpful AI assistant created and founded by Aniket. You are warm, brilliant, and direct. You format responses clearly using markdown when helpful (bold, code blocks, lists). You never mention Anthropic or Claude — you are A.AI, built by Aniket. Be concise but thorough. Always be proud of being A.AI.`;
+function doLogin() {
+  const u = document.getElementById('username').value.trim().toLowerCase();
+  const p = document.getElementById('password').value;
+  const err = document.getElementById('login-error');
+  if (u === CREDS.username && p === CREDS.password) {
+    document.getElementById('login-page').style.display = 'none';
+    document.getElementById('repo-page').style.display = 'flex';
+    document.getElementById('repo-page').style.flexDirection = 'column';
+  } else {
+    err.style.display = 'block';
+    document.getElementById('password').value = '';
+    document.getElementById('password').focus();
+    setTimeout(() => err.style.display = 'none', 3000);
+  }
+}
 
-// ── AUTO-RESIZE TEXTAREA ──
+function showChat() {
+  document.getElementById('repo-page').style.display = 'none';
+  document.getElementById('chat-page').style.display = 'flex';
+}
+
+function showRepo() {
+  document.getElementById('chat-page').style.display = 'none';
+  document.getElementById('repo-page').style.display = 'flex';
+}
+
+// ── CHAT ──
+let msgs = [];
+let busy = false;
+const SYSTEM = `You are A.AI, the world's most advanced and helpful AI assistant, created and founded by Aniket. You are brilliant, warm, and precise. Format your responses clearly using markdown when appropriate (use **bold**, \`code\`, code blocks, bullet lists). Never mention Anthropic or Claude — you are A.AI built by Aniket. Be genuinely helpful, accurate, and concise. Take pride in being A.AI.`;
+
 const inp = document.getElementById('inp');
-inp.addEventListener('input', () => {
-  inp.style.height = 'auto';
-  inp.style.height = Math.min(inp.scrollHeight, 160) + 'px';
-});
-inp.addEventListener('keydown', e => {
-  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); }
-});
+inp.addEventListener('input', () => { inp.style.height = 'auto'; inp.style.height = Math.min(inp.scrollHeight, 160) + 'px'; });
+inp.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); } });
 
-// ── SEND ──
-async function sendMsg() {
-  const text = inp.value.trim();
-  if (!text || isStreaming) return;
+function sendMsg() {
+  const t = inp.value.trim();
+  if (!t || busy) return;
   inp.value = ''; inp.style.height = 'auto';
-  ask(text);
+  ask(t);
 }
 
 async function ask(text) {
-  if (!text || isStreaming) return;
+  if (busy) return;
+  // hide welcome
+  document.getElementById('welcome-screen').style.display = 'none';
+  document.getElementById('feed').style.display = 'flex';
+  document.getElementById('feed').style.flexDirection = 'column';
 
-  // show chat feed
-  document.getElementById('welcome').style.display = 'none';
-  const feed = document.getElementById('feed');
-  feed.classList.add('active');
+  msgs.push({ role: 'user', content: text });
+  addBubble('user', text);
+  addHistItem(text);
+  busy = true;
+  document.getElementById('sendbtn').disabled = true;
 
-  // add to history
-  messages.push({ role: 'user', content: text });
-  msgCount++;
-  document.getElementById('tc').textContent = msgCount;
-
-  // render user bubble
-  appendBubble('user', text);
-  addHistoryItem(text);
-
-  // show stop btn
-  isStreaming = true;
-  const sendbtn = document.getElementById('sendbtn');
-  sendbtn.disabled = true;
-
-  // render AI bubble (empty, will stream into)
-  const aiBubble = appendBubble('ai', '');
-
+  const aiBub = addBubble('ai', '');
   const t0 = Date.now();
 
   try {
-    abortController = new AbortController();
-
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      signal: abortController.signal,
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 1000,
         system: SYSTEM,
-        messages: messages
+        messages: msgs
       })
     });
-
-    const data = await resp.json();
-    const reply = data?.content?.[0]?.text || "Sorry, I couldn't get a response. Please try again.";
-
-    // Typewriter effect
-    await typewrite(aiBubble, reply);
-    messages.push({ role: 'assistant', content: reply });
-    msgCount++;
-    document.getElementById('tc').textContent = msgCount;
-
+    const data = await res.json();
+    const reply = data?.content?.[0]?.text || 'Sorry, something went wrong. Please try again.';
+    await typeIn(aiBub, reply);
+    msgs.push({ role: 'assistant', content: reply });
   } catch(e) {
-    if (e.name !== 'AbortError') {
-      aiBubble.innerHTML = '<em style="color:var(--muted)">Something went wrong. Please try again.</em>';
-    }
+    aiBub.innerHTML = '<em style="color:var(--muted)">Connection error. Please try again.</em>';
   }
 
-  const ms = Date.now() - t0;
-  document.getElementById('lat').textContent = ms + 'ms';
-  document.getElementById('latstat').style.display = '';
-  isStreaming = false;
-  sendbtn.disabled = false;
-  abortController = null;
+  busy = false;
+  document.getElementById('sendbtn').disabled = false;
 }
 
-// ── TYPEWRITER ──
-function typewrite(el, text) {
+function typeIn(el, text) {
   return new Promise(resolve => {
-    const formatted = formatMd(text);
-    // For code blocks, don't typewrite — just set instantly
-    if (text.includes('```')) {
-      el.innerHTML = formatted;
-      resolve();
-      return;
-    }
-    // Otherwise stream character by character
+    if (text.includes('```')) { el.innerHTML = md(text); resolve(); return; }
     el.innerHTML = '';
     let i = 0;
-    const chars = [...text];
-    function next() {
-      if (i >= chars.length) { el.innerHTML = formatted; resolve(); return; }
-      // show plain text while typing
-      el.textContent = text.slice(0, i + 1);
-      // add blinking cursor
-      const cursor = document.createElement('span');
-      cursor.className = 'cursor-blink';
-      el.appendChild(cursor);
-      i++;
+    const tick = () => {
+      if (i >= text.length) { el.innerHTML = md(text); resolve(); return; }
+      el.textContent = text.slice(0, ++i);
+      const cur = document.createElement('span');
+      cur.className = 'cursor-blink';
+      el.appendChild(cur);
       document.getElementById('feed').scrollTop = 999999;
-      setTimeout(next, 12);
-    }
-    next();
+      setTimeout(tick, 10);
+    };
+    tick();
   });
 }
 
-// ── MARKDOWN FORMATTER ──
-function formatMd(text) {
-  return text
+function md(t) {
+  return t
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-    .replace(/```(\w*)\n?([\s\S]*?)```/g, (_,lang,code) =>
-      `<pre><code>${code.trim()}</code></pre>`)
+    .replace(/```(\w*)\n?([\s\S]*?)```/g, (_,l,c) => `<pre><code>${c.trim()}</code></pre>`)
     .replace(/`([^`]+)`/g,'<code>$1</code>')
     .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
     .replace(/\*(.+?)\*/g,'<em>$1</em>')
-    .replace(/^### (.+)$/gm,'<strong style="font-size:15px;display:block;margin:8px 0 4px">$1</strong>')
-    .replace(/^## (.+)$/gm,'<strong style="font-size:16px;display:block;margin:10px 0 4px">$1</strong>')
-    .replace(/^# (.+)$/gm,'<strong style="font-size:18px;display:block;margin:10px 0 4px">$1</strong>')
-    .replace(/^\- (.+)$/gm,'<li>$1</li>')
-    .replace(/^(\d+)\. (.+)$/gm,'<li>$2</li>')
-    .replace(/<\/li>\n<li>/g,'</li><li>')
-    .replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>')
-    .replace(/\n\n/g,'<br><br>')
-    .replace(/\n/g,'<br>');
+    .replace(/^#{3} (.+)$/gm,'<strong style="display:block;margin:8px 0 4px;font-size:15px">$1</strong>')
+    .replace(/^#{2} (.+)$/gm,'<strong style="display:block;margin:10px 0 4px;font-size:16px">$1</strong>')
+    .replace(/^# (.+)$/gm,'<strong style="display:block;margin:10px 0 6px;font-size:18px">$1</strong>')
+    .replace(/^\- (.+)$/gm,'<li style="margin:3px 0">$1</li>')
+    .replace(/^(\d+)\. (.+)$/gm,'<li style="margin:3px 0">$2</li>')
+    .replace(/(<li[^>]*>.*<\/li>)/gs,'<ul style="padding-left:18px;margin:6px 0">$1</ul>')
+    .replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>');
 }
 
-// ── RENDER BUBBLE ──
-function appendBubble(who, text) {
+function addBubble(who, text) {
   const feed = document.getElementById('feed');
-  const group = document.createElement('div');
-  group.className = 'msg-group ' + who;
-
-  const avClass = who === 'ai' ? 'av-ai' : 'av-user';
-  const avLabel = who === 'ai' ? 'A' : 'U';
+  const row = document.createElement('div');
+  row.className = 'msg-wrap';
+  const inner = document.createElement('div');
+  inner.className = 'msg-row ' + who;
+  const avCls = who === 'ai' ? 'msg-av av-a' : 'msg-av av-u';
+  const avLbl = who === 'ai' ? 'A' : 'U';
   const name = who === 'ai' ? 'A.AI' : 'You';
-  const bubClass = who === 'ai' ? 'bubble ai' : 'bubble user';
-
-  const bubbleEl = document.createElement('div');
-  bubbleEl.className = bubClass;
-  if (text) bubbleEl.innerHTML = who === 'ai' ? formatMd(text) : escHtml(text);
-
-  group.innerHTML = `
-    <div class="msg-av ${avClass}">${avLabel}</div>
-    <div class="msg-content">
-      <div class="msg-name">${name}</div>
-    </div>`;
-  group.querySelector('.msg-content').appendChild(bubbleEl);
-  feed.appendChild(group);
+  const bCls = who === 'ai' ? 'bubble ai' : 'bubble user';
+  const bub = document.createElement('div');
+  bub.className = bCls;
+  if (text) bub.innerHTML = who === 'ai' ? md(text) : esc(text);
+  inner.innerHTML = `<div class="${avCls}">${avLbl}</div><div class="msg-body"><div class="msg-name">${name}</div></div>`;
+  inner.querySelector('.msg-body').appendChild(bub);
+  row.appendChild(inner);
+  feed.appendChild(row);
   feed.scrollTop = 999999;
-  return bubbleEl;
+  return bub;
 }
 
-// ── HISTORY ──
-function addHistoryItem(text) {
-  const preview = text.length > 28 ? text.slice(0, 28) + '…' : text;
-  const h = document.getElementById('history');
-  const item = document.createElement('div');
-  item.className = 'hist-item active';
-  item.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>${preview}`;
-  h.querySelectorAll('.hist-item').forEach(x => x.classList.remove('active'));
-  h.insertBefore(item, h.firstChild);
+function addHistItem(text) {
+  const h = document.getElementById('chatHist');
+  h.querySelectorAll('.ch-item').forEach(x => x.classList.remove('active'));
+  const el = document.createElement('div');
+  el.className = 'ch-item active';
+  el.textContent = text.length > 30 ? text.slice(0, 30) + '…' : text;
+  h.insertBefore(el, h.firstChild);
 }
 
-// ── NEW CHAT ──
 function newChat() {
-  messages = [];
-  msgCount = 0;
-  document.getElementById('tc').textContent = '0';
-  document.getElementById('latstat').style.display = 'none';
+  msgs = [];
   document.getElementById('feed').innerHTML = '';
-  document.getElementById('feed').classList.remove('active');
-  document.getElementById('welcome').style.display = '';
-  inp.value = ''; inp.style.height = 'auto';
+  document.getElementById('feed').style.display = 'none';
+  document.getElementById('welcome-screen').style.display = '';
 }
 
-function escHtml(t) {
-  return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
+function esc(t) { return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 </script>
 </body>
 </html>
