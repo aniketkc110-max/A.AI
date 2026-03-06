@@ -717,20 +717,27 @@ async function ask(text){
   try{
     const r=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',
-      headers:{'Content-Type':'application/json','x-api-key':APIKEY,'anthropic-version':'2023-06-01'},
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key':APIKEY,
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
+      },
       body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2048,system:SYS,messages:MSGS})
     });
     const d=await r.json();
     const reply=d?.content?.[0]?.text;
     if(!reply){
-      aib.innerHTML=`<span style="color:#ff6b6b">⚠ ${d?.error?.message||'API error. Check your key.'}</span>`;
+      const errMsg = d?.error?.message || JSON.stringify(d?.error) || 'Unknown error';
+      aib.innerHTML=`<span style="color:#ff6b6b">⚠ API Error: ${errMsg}</span>`;
     } else {
       await typewrite(aib,reply);
       MSGS.push({role:'assistant',content:reply});
       TOTAL++;document.getElementById('tc').textContent=TOTAL;
     }
   }catch(e){
-    aib.innerHTML=`<span style="color:#ff6b6b">⚠ Connection failed. Check API key & internet.</span>`;
+    console.error('A.AI error:',e);
+    aib.innerHTML=`<span style="color:#ff6b6b">⚠ ${e.message}</span>`;
   }
   const ms=Date.now()-t0;
   document.getElementById('lat-v').textContent=ms+'ms';
