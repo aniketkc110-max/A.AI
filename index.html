@@ -486,21 +486,16 @@ html,body{height:100%;overflow:hidden;background:#000;font-family:'Inter',sans-s
         <div class="lc-sub">Next Level Intelligence · By Aniket</div>
       </div>
       <div class="lf">
-        <label>Username</label>
-        <input type="text" id="lu" placeholder="aniket" autocomplete="username"/>
+        <label>Email Address</label>
+        <input type="email" id="lemail" placeholder="you@example.com" onkeydown="if(event.key==='Enter')login()" autocomplete="email"/>
       </div>
-      <div class="lf">
-        <label>Password</label>
-        <input type="password" id="lp" placeholder="••••••••" autocomplete="current-password"/>
+      <div class="lf" id="api-field" style="display:none">
+        <label>API Key (Owner Only)</label>
+        <input type="password" id="lk" placeholder="sk-ant-..." autocomplete="off"/>
       </div>
-      <div class="lf">
-        <label>Anthropic API Key</label>
-        <input type="password" id="lk" placeholder="sk-ant-api03-..." onkeydown="if(event.key==='Enter')login()"/>
-        <div class="lf-hint">Get free key → <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a></div>
-      </div>
-      <button class="login-btn" onclick="login()">ENTER A.AI</button>
+      <button class="login-btn" onclick="login()">LAUNCH A.AI →</button>
       <div class="l-err" id="l-err"></div>
-      <div class="l-creds">user: <code>aniket</code> &nbsp;·&nbsp; pass: <code>aai2026</code> &nbsp;·&nbsp; + API key</div>
+      <div class="l-creds">Enter your email to access A.AI 🚀<br/><span style="font-size:9px;opacity:0.4">Owner: press Ctrl+Shift+K to set API key</span></div>
     </div>
   </div>
 </div>
@@ -663,23 +658,38 @@ function drawBg(){
 drawBg();
 
 // ══ LOGIN ══
-const CREDS={u:'aniket',p:'aai2026'};
-let APIKEY='';
+let APIKEY=''; // Set your API key here if needed
+let USER_EMAIL='';
+
+// Press Ctrl+Shift+K to toggle API key field (for owner/Aniket)
+document.addEventListener('keydown',e=>{
+  if(e.ctrlKey&&e.shiftKey&&e.key==='K'){
+    const f=document.getElementById('api-field');
+    f.style.display=f.style.display==='none'?'block':'none';
+  }
+});
 
 function login(){
-  const u=document.getElementById('lu').value.trim().toLowerCase();
-  const p=document.getElementById('lp').value;
-  const k=document.getElementById('lk').value.trim();
+  const email=document.getElementById('lemail').value.trim();
   const err=document.getElementById('l-err');
-  if(u!==CREDS.u||p!==CREDS.p){
-    err.textContent='⚠ Incorrect username or password.';err.style.display='block';
+  if(!email||!email.includes('@')||!email.includes('.')){
+    err.textContent='⚠ Please enter a valid email address.';err.style.display='block';
     setTimeout(()=>err.style.display='none',3000);return;
   }
-  if(!k.startsWith('sk-ant-')){
-    err.textContent='⚠ API key must start with sk-ant-';err.style.display='block';
-    setTimeout(()=>err.style.display='none',3000);return;
+  // Check if owner entered API key
+  const kField=document.getElementById('lk');
+  if(kField&&kField.value.trim().startsWith('sk-ant-')){
+    APIKEY=kField.value.trim();
+    localStorage.setItem('aai_key',APIKEY);
+  } else {
+    // Try to load saved key
+    APIKEY=localStorage.getItem('aai_key')||'';
   }
-  APIKEY=k;
+  if(!APIKEY){
+    err.textContent='⚠ No API key set. Press Ctrl+Shift+K to enter it.';err.style.display='block';
+    setTimeout(()=>err.style.display='none',4000);return;
+  }
+  USER_EMAIL=email;
   document.getElementById('pg-login').style.display='none';
 }
 
